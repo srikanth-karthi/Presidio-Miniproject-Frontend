@@ -19,8 +19,9 @@ export async function fetchData(
       body: isFileUpload ? body : body ? JSON.stringify(body) : undefined,
     });
 
-    if (response.status == 401 && !isauth) {
-      window.location.href = "/Auth/login.html";
+    if (response.status == 401 && !isauth || response.status == 403 && !isauth) {
+      localStorage.clear()
+      window.location.href = "/Auth/login.html?authid=3";
       return;
     }
     if (!response.ok) {

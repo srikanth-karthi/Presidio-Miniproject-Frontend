@@ -232,6 +232,10 @@ catch
           <span class="meta-tags ${getJobTypeClass(jobItem.jobType)}">${jobItem.jobType}</span>
         </div>
         ${button}`;
+
+        jobItemDiv.addEventListener("click", function() {
+          showModal(jobItem);
+      });
       jobList.appendChild(jobItemDiv);
     }
     totalPages = jobItems.length > itemsPerPage ? Math.ceil(jobItems.length / itemsPerPage) : 1;
@@ -326,6 +330,78 @@ currentPage = parseInt(text) || currentPage + (text === ">" ? 1 : -1);
       } else {
         showToast("error", "An error occurred", " Please Apply again Later");
       }
+    }
+  }
+
+//   {
+//     "status": true,
+//     "jobId": "c94de525-63e8-400b-8357-bb9004a57ef9",
+//     "companylogo": "http://localhost:9000/job-portal-application/company-logo/a51cc874-78a8-486b-8094-666572b4ae0b.jpg",
+//     "datePosted": "2024-06-26T00:00:00",
+//     "titleId": "7306797b-2165-4605-b8f2-5a3e75274371",
+//     "companyName": "Genspark Company",
+//     "jobDescription": "Ensure quality and performance of software products through rigorous testing.",
+//     "lpa": 10,
+//     "experienceRequired": 13,
+//     "titleName": "Artificial Intelligence Engineer",
+//     "jobType": "Hybrid",
+//     "skills": [
+//         {
+//             "skillId": "cb9be326-e09d-4772-a8fb-09cb58548ffa",
+//             "skillName": "Docker"
+//         },
+//         {
+//             "skillId": "39110fc7-d37d-47d4-a3d4-0e4553b4d73a",
+//             "skillName": "Objective-C"
+//         }
+//     ]
+// }
+
+function formatDate(dateString) {
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+}
+  function showModal(jobData) {
+    console.log(jobData)
+    document.getElementById('companyLogo').src = jobData.companylogo;
+    document.getElementById('titleName').textContent = jobData.titleName;
+    document.getElementById('companyName').textContent = jobData.companyName;
+    document.getElementById('jobType').textContent = jobData.jobType;
+    document.getElementById('Experience').textContent =  jobData.experienceRequired>0?  jobData.experienceRequired+ ' Years': 'No experience Required'
+    document.getElementById('posteddate').textContent = formatDate(jobData.datePosted);
+    document.getElementById('lpa').textContent = jobData.lpa ?   jobData.lpa+' Lpa' : "Not Mentioned"
+
+    
+    const modal = document.getElementById("jobModal");
+    let circularProgress = document.querySelector(".circular-progress"),
+    progressValue = document.querySelector(".progress-value");
+
+let progressStartValue = 0,    
+    progressEndValue = jobData.jobscrore >0 ? jobData.jobscrore:1,    
+    speed = 10;
+    
+let progress = setInterval(() => {
+    progressStartValue++;
+
+    progressValue.textContent = `${progressStartValue}%`
+    circularProgress.style.background = `conic-gradient(#7d2ae8 ${progressStartValue * 3.6}deg, #ededed 0deg)`
+
+    if(progressStartValue == progressEndValue){
+        clearInterval(progress);
+    }    
+}, speed);
+    modal.style.display = "block";
+  }
+
+  document.querySelector(".close").onclick = function() {
+    const modal = document.getElementById("jobModal");
+    modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById("jobModal");
+    if (event.target == modal) {
+      modal.style.display = "none";
     }
   }
 

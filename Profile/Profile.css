@@ -602,9 +602,21 @@ margin-left: 350px;
   flex-wrap: wrap;
   gap: 10px;
 }
+.address
+{
+  width: 100%;
+  overflow: auto;
 
+  word-wrap: anywhere; /* Ensures text will break and wrap within the container */
+  white-space: normal; /* Allows the text to wrap to the next line */
+}
 
-
+#about-me-text {
+  overflow: auto;
+    overflow-wrap: anywhere; /* Ensures text will break and wrap within the container */
+    word-wrap: anywhere; /* Ensures text will break and wrap within the container */
+    white-space: normal; /* Allows the text to wrap to the next line */
+  }
 
 @media (max-width: 768px) {
   .container {

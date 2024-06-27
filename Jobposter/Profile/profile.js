@@ -35,6 +35,7 @@ let Profile;
 async function loadProfile() {
   try {
     Profile = await fetchData("api/Company/profile");
+    console.log(Profile)
     renderProfile(Profile);
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -43,7 +44,7 @@ async function loadProfile() {
 }
 
 function renderProfile(profile) {
-  console.log(profile.logoUrl)
+
   elements.profile.innerHTML = `
     <img src="${profile.logoUrl ?profile.logoUrl+'?date='+Date.now()  :"../../assets/Company.png"}" width="60" height="60" alt="" />
     <div>

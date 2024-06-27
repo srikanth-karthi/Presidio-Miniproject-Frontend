@@ -102,6 +102,7 @@ function formatDate(dateString) {
 let currentPage = 1;
   try {
  jobhistory = await fetchData("api/JobActivity/user/appliedjobs");
+ console.log(jobhistory)
 
 } catch (error) {
     if (error.message.includes("404")) {

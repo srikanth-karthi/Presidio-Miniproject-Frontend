@@ -100,7 +100,7 @@ if(!localStorage.getItem('authToken'))
      userprofile = await fetchData("api/User/profile");
 
      
-
+     console.log(userprofile)
      
 
 
@@ -134,7 +134,7 @@ if(!localStorage.getItem('authToken'))
   var selected_values=UserSkillsArray
   var useraoi = userprofile.areasOfInterests;
 
-
+console.log(selected_values)
 
   const profilePicture = userprofile.profilePictureUrl || "../assets/profile.png";
   profilePictureContainer.innerHTML = `<img src="${profilePicture+'?date='+Date.now()}" alt="User Profile Picture" />`;
@@ -202,7 +202,10 @@ document.querySelector('.detail-text.portfolio').innerHTML = userprofile.portfol
       showToast('warning', 'Warning', 'Phone number must be 10 digits.');
       return;
     }
-
+    if (address.length > 25) {
+      showToast('warning', 'Warning', 'Address  should not exceed 25 characters.');
+      return;
+    }
     if (portfolioLink.length > 200) {
       showToast('warning', 'Warning', 'Portfolio link should not exceed 200 characters.');
       return;
@@ -761,7 +764,10 @@ expSubmitBtnAdd.addEventListener("click", async function (event) {
     showToast('warning', 'Warning', 'Please fill in all required fields');
     return;
   }
-
+  if (company.trim().length>20) {
+    showToast('warning', 'Warning', 'company must be under 20 character');
+    return;
+  }
   if (new Date(startDate) >= new Date(endDate)) {
     showToast('warning', 'Warning', 'End date must be greater than start date');
     return;
@@ -819,7 +825,10 @@ expSubmitBtnUpdate.addEventListener("click", async function (event) {
     showToast('warning', 'Warning', 'End date must be greater than start date');
     return;
   }
-
+  if (company.trim().length>20) {
+    showToast('warning', 'Warning', 'company must be under 20 character');
+    return;
+  }
   const startYear = new Date(startDate).toISOString().split("T")[0];
   const endYear = new Date(endDate).toISOString().split("T")[0];
 
@@ -868,7 +877,10 @@ eduSubmitBtnAdd.addEventListener("click", async function (event) {
     showToast('warning', 'Warning', 'Please fill in all required fields');
     return;
   }
-
+  if (institutionName.trim().length>20) {
+    showToast('warning', 'Warning', 'InstitutionName must be under 20 character');
+    return;
+  }
   const startYear = new Date(startYearString).toISOString().split("T")[0];
   const endYear = isCurrentlyStudying ? null : new Date(endYearString).toISOString().split("T")[0];
 
@@ -928,6 +940,10 @@ eduSubmitBtnUpdate.addEventListener("click", async function (event) {
 
   if (!isCurrentlyStudying && new Date(startYear) >= new Date(endYear)) {
     showToast('warning', 'Warning', 'End year must be greater than start year');
+    return;
+  }
+  if (institutionName.trim().length>20) {
+    showToast('warning', 'Warning', 'InstitutionName must be under 20 character');
     return;
   }
   if (percentage >= 100) {

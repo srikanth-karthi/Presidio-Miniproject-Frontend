@@ -10,6 +10,12 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
     />
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/charts.css/dist/charts.min.css"
+  />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
+
     <link rel="stylesheet" href="../../Package/toaster.css" />
   </head>
   <body>
@@ -34,7 +40,23 @@
       </nav>
       <div class="profile"></div>
     </div>
-    <div class="main-content">
+    <div style="display: none;" class="user-profile">
+
+   
+
+        <h3 class="user-backbutton"> <img
+          onclick="profilebackbtn()"
+            src="../../assets/backarrow.svg"
+        
+            srcset=""
+          />Applicant Details </h3>
+          <div  id="user-profile-container" class="user-profile-container">
+       
+        </div>
+    </div>
+      
+    </div>
+    <div   class="main-content">
       <header class="header">
         <button class="menu-button" id="menuButton">☰</button>
         <div class="headings">
@@ -77,9 +99,9 @@
           </div>
         </header>
         <nav class="job-navigation">
-          <a href="#">Applicants</a>
-          <a href="#">Job Details</a>
-          <a href="#">Analytics</a>
+          <a class="job-applicants-tab active-tab">Applicants</a>
+          <a class="job-details-tab">Job Details</a>
+          <a class="job-analytics-tab">Analytics</a>
         </nav>
         <div class="applicants-section">
           <div class="applicants-header">
@@ -100,21 +122,70 @@
                 <th>Full Name</th>
                 <th>Status</th>
                 <th>Applied Date</th>
+                <th>Profile</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody id="applicants-tbody">
-              <!-- Applicant rows will be dynamically inserted here -->
+          
             </tbody>
           </table>
+          <div class="pagination-applicant">
+            <button id="prev-page-applicant">Previous</button>
+            <span id="page-number-applicant">1</span>
+            <button id="next-page-applicant">Next</button>
+          </div>
         </div>
       </div>
+      <div style="display: none;" class="jobcontainer">
+       
+    </div>
+
+    <div style="display: none;" id="job-stats-chart">
+
+
+      <table class="charts-css column show-labels hide-data data-spacing-5 show-primary-axis">
+          <caption>
+              Job Portal Stats
+          </caption>
+          <thead>
+              <tr>
+                  <th scope="col">Status</th>
+                  <th scope="col">Count</th>
+              </tr>
+          </thead>
+          <tbody id="chart-data">
+      
+          </tbody>
+      </table>
+  </div>
+
+
+
       <div class="pagination">
         <button id="prev-page">Previous</button>
         <span id="page-number">1</span>
         <button id="next-page">Next</button>
       </div>
     </div>
+
+
+
+
+
+  
+<div id="commentPopup" class="popup hidden">
+  <div class="popup-content">
+      <h3>Provide Comments</h3>
+      <textarea id="commentText" rows="4" placeholder="Enter your comments here..."></textarea>
+      <div>
+      <button id="submitComment">Submit</button>
+      <button id="cancelComment">Cancel</button>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <script type="module" src="job-listings.js"></script>
   </body>
 </html>
