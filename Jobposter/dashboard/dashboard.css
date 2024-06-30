@@ -17,7 +17,10 @@ body {
 .profile {
   margin-bottom: 0px;
 }
-
+a{
+  text-decoration: none;
+  color:initial;
+}
 .main-content {
   flex: 1;
   padding: 20px;

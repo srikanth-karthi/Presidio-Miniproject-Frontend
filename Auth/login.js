@@ -1,82 +1,56 @@
 import { showToast } from "../Package/toaster.js";
 import { fetchData } from "../Package/api.js";
-document.addEventListener('DOMContentLoaded', (event) => {
 
-  function getQueryParam(param) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param);
-  }
-  
-  function removeQueryParam(param) {
-    const url = new URL(window.location);
-    const urlParams = new URLSearchParams(url.search);
-    urlParams.delete(param);
-    url.search = urlParams.toString();
-    window.history.replaceState({}, document.title, url.toString());
-  }
-  
-  const authid = getQueryParam('authid');
-  if(authid==2)
-    {
-      showToast('success', 'Success', 'Logout Sucessfull.');
-      removeQueryParam('authid');
-    }
-    else if(authid==3)
-      {
+const loginForm = document.getElementById('loginForm');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+const userTypeInputs = document.querySelectorAll('input[name="user-type"]');
+
+function getQueryParam(param) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
+
+function removeQueryParam(param) {
+  const url = new URL(window.location);
+  const urlParams = new URLSearchParams(url.search);
+  urlParams.delete(param);
+  url.search = urlParams.toString();
+  window.history.replaceState({}, document.title, url.toString());
+}
+
+const authid = getQueryParam('authid');
+if (authid) {
+    if (authid === '2') {
+        showToast('success', 'Success', 'Logout Successful.');
+    } else if (authid === '3') {
         showToast('warning', 'Warning', 'Please Login.');
-        removeQueryParam('authid');
-      }
-  
+    }
+    removeQueryParam('authid');
+}
 
+loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-    const loginForm = document.getElementById('loginForm');
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value.trim();
+    const userType = Array.from(userTypeInputs).find(input => input.checked)?.id;
 
-    loginForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
+    if (!email || !password) {
+        showToast('warning', 'Warning', 'Please fill in all required fields.');
+        return;
+    }
 
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+    const loginData = { email, password };
+    const loginUrl = userType === 'job-seeker' ? 'api/User/login' : 'api/Company/login';
 
-        const userType = document.querySelector('input[name="user-type"]:checked').id;
-
-        if (!email.trim() || !password.trim()) {
-          showToast('warning', 'Warning', 'Please fill in all required fields.');
-
-            return;
-        }
-
-        const loginData = {
-            email: email,
-            password: password
-        };
-
-        let loginUrl;
-        if (userType === 'job-seeker') {
-            loginUrl = 'api/User/login';
-        } else if (userType === 'company') {
-            loginUrl = 'api/Company/login';
-        }
-
-        try {
-            const response = await fetchData(loginUrl, 'POST', loginData,false,true);
-            localStorage.setItem("authToken", response.token);
-            if (userType === 'job-seeker') {
-              window.location.href = "../dashboard/dashboard.html?authid=1";
-          } else if (userType === 'company') {
-            window.location.href = "/Jobposter/dashboard/dashboard.html?authid=1";
-          }
-   
-        } catch (error) {
-            console.error("Error updating profile details:", error);
-        
-            if (error.message.includes("401") || error.message.includes("400")) {
-              showToast('error', 'Login Failed', 'Invalid credentials.');
-            } 
-            else {
-              showToast('error', 'An error occurred', ' Please login again Later');
-            }
-          }
-        
-    });
+    try {
+        const response = await fetchData(loginUrl, 'POST', loginData, false, true);
+        localStorage.setItem("authToken", response.token);
+        window.location.href = userType === 'job-seeker' ? "../dashboard/dashboard.html?authid=1" : "/Jobposter/dashboard/dashboard.html?authid=1";
+    } catch (error) {
+        console.error("Error updating profile details:", error);
+        const errorMessage = error.message.includes("401") || error.message.includes("400") ? 'Invalid credentials.' : 'Please login again later.';
+        showToast('error', 'Login Failed', errorMessage);
+    }
 });
-

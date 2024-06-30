@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:5117/";
+export const baseUrl = "http://localhost:5117/";
 
 export async function fetchData(
     url,

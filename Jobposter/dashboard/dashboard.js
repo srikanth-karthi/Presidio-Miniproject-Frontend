@@ -53,7 +53,7 @@ document.querySelector('.greeting').textContent=getGreetingBasedOnTime()
 
   try {
     const Profile = await fetchData("api/Company/profile");
-console.log(Profile)
+
     const firstName = Profile.companyName.split(' ')[0];
 
     const profileData = {
@@ -65,7 +65,7 @@ console.log(Profile)
     localStorage.setItem("profile", JSON.stringify(profileData));
 
     profileElement.innerHTML = `
-      <img src="${profileData.profileUrl?profileData.profileUrl :'../../assets/profile.png' }" width="60" height="60" alt="" />
+      <img src="${profileData.profileUrl?profileData.profileUrl :'../../assets/Company.png' }" width="60" height="60" alt="" />
       <div>
         <p>${profileData.name}</p>
 
@@ -74,8 +74,7 @@ console.log(Profile)
 
     nameElement.textContent = profileData.name;
   } catch (error) {
-    console.log(error)
-    console.log("sisydg")
+
     if (error.message.includes("401")) {
     }
   }
@@ -118,7 +117,7 @@ console.log(Profile)
         `api/Job`
       );
     } catch (error) {
-      console.log(error);
+;
       return [];
     }
   }
@@ -144,13 +143,13 @@ console.log(Profile)
   
 
     var jobItems = await GetJobs();
-    console.log(jobItems);
+
   
     let open = 0, closed = 0;
   
     jobItems.forEach(job => {
 
-      console.log(job.companyName)
+
       if (job.status) open += 1;
       else closed += 1;
     });
@@ -199,15 +198,17 @@ console.log(Profile)
       jobItemDiv.classList.add("job-item");
       jobItem.companylogo = jobItem.companylogo ? jobItem.companylogo : "../../assets/Company.png";
       jobItemDiv.innerHTML = `
+      <a href="../job-listings/job-listing.html">
         <img src="${jobItem.companylogo}" width="50"  height="50" alt="${jobItem.titleName}">
         <div class="company-details">
           <h3>${jobItem.titleName}</h3>
           <p>${jobItem.companyName} • ${jobItem.experienceRequired} yrs Experience</p>
           <span class="meta-tags ${getJobTypeClass(jobItem.jobType)}">${jobItem.jobType}</span>
-        </div>`;
+        </div>
+        </a>`;
       jobList.appendChild(jobItemDiv);
     }
 
   }
   renderTable(1,3)
-// });
+

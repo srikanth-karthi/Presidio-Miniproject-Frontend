@@ -88,7 +88,7 @@ a {
 
 .company-profile {
   display: flex;
-  flex: 2;
+  flex: 1;
   flex-wrap: wrap;
   animation: fadeIn 1s ease-in-out;
   margin-left: 15px;
@@ -101,7 +101,7 @@ a {
 }
 .profile-container-right
 {
-  flex: 0.5;
+  flex: 2;
 }
 .company-logo-container {
   position: relative;
@@ -118,8 +118,8 @@ a {
 
 .edit-profile {
   position: absolute;
-  top: 5px; /* Adjust top position as needed */
-  right: 5px; /* Adjust right position as needed */
+  top: 5px; 
+  right: 5px; 
   background: none;
   border: none;
   padding: 0;
@@ -153,10 +153,11 @@ flex-direction: column;
   margin-bottom: 20px;
 }
 #description-text {
-overflow: auto;
-  overflow-wrap: anywhere; /* Ensures text will break and wrap within the container */
-  word-wrap: anywhere; /* Ensures text will break and wrap within the container */
-  white-space: normal; /* Allows the text to wrap to the next line */
+  overflow: auto;
+  overflow-wrap: anywhere;
+  word-wrap: anywhere;
+  white-space: normal;
+  line-height: 1.5; 
 }
 
 .profile-section h2,.subject h3 {
@@ -258,11 +259,12 @@ background-color: #fff;
 }
 .address
 {
-  width: 250px; 
+  width: 380px; 
   overflow: auto;
   overflow-wrap: anywhere;
-  
   word-wrap: anywhere;
+  white-space: normal;
+  line-height: 1.5; 
 }
 .website-link:hover {
   text-decoration: underline;
@@ -297,7 +299,7 @@ background-color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Modal Header */
+
 .modal-content h2 {
   display: flex;
   align-items: center;
@@ -308,7 +310,7 @@ background-color: #fff;
   padding-bottom: 10px;
 }
 
-/* Close Button */
+
 .close {
   color: #aaa;
   font-size: 28px;
@@ -322,7 +324,7 @@ background-color: #fff;
   text-decoration: none;
 }
 
-/* Form Groups */
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -355,7 +357,7 @@ margin-bottom: 8px;
   transition: border-bottom-color 0.3s;
 }
 
-/* Form Actions */
+
 .form-actions {
   display: flex;
   justify-content: space-between;

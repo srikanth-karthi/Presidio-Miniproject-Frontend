@@ -1,77 +1,58 @@
-
 import { fetchData } from "../Package/api.js";
 
-
-if(!localStorage.getItem('authToken'))
-    {
-      window.location.href = "/Auth/login.html?authid=3";
-   
-    }
-    
-document.getElementById('cross').style.display = 'none';
-
-document.getElementById('menuButton').addEventListener('click', function() {
-    document.getElementById('sidebar').classList.toggle('hidden');
-    document.getElementById('company-logo').style.display = 'none';
-    document.getElementById('cross').style.display = 'block';
-    document.querySelector('.main-content').classList.toggle('expanded');
-});
-
-document.getElementById('cross').addEventListener('click', function() {
-    const sidebar = document.getElementById('sidebar');
-    const companyLogo = document.getElementById('company-logo');
-    const crossButton = document.getElementById('cross');
-    const mainContent = document.querySelector('.main-content');
-
-    sidebar.classList.toggle('hidden');
-    mainContent.classList.toggle('expanded');
-
-    if (companyLogo.style.display === 'none' || companyLogo.style.display === '') {
-        companyLogo.style.display = 'block';
-        crossButton.style.display = 'none';
-    } else {
-        companyLogo.style.display = 'none';
-        crossButton.style.display = 'block';
-    }
-});
-
-
+const authToken = localStorage.getItem('authToken');
 const profileData = JSON.parse(localStorage.getItem("profile"));
+const sidebar = document.getElementById('sidebar');
+const companyLogo = document.getElementById('company-logo');
+const crossButton = document.getElementById('cross');
+const mainContent = document.querySelector('.main-content');
+const profileElement = document.querySelector(".profile");
+const nameElement = document.querySelector('.name');
+const modal = document.getElementById("jobModal");
+const closeModalButton = document.querySelector(".close");
+const pagination = document.getElementById("pagination");
+const itemsPerPage = 5;
+let currentPage = 1;
+let jobHistory = [];
 
-
-if (profileData) {
-  const profileElement = document.querySelector(".profile");
-
-
-  if (profileElement) {
-    profileElement.innerHTML = `
-  <img src="${profileData.profileUrl?profileData.profileUrl :'../assets/profile.png' }" width="60" height="60" alt="" />
-      <div>
-        <p>${profileData.name}</p>
-  
-      </div>
-    `;
-  }
-
-  const nameElement = document.querySelector('.name');
-
-
-  if (nameElement) {
-    nameElement.textContent = profileData.name;
-  }
-} else {
-  console.error("Profile data not found in localStorage.");
+if (!authToken) {
+    window.location.href = "/Auth/login.html?authid=3";
 }
 
+crossButton.style.display = 'none';
 
+document.getElementById('menuButton').addEventListener('click', function() {
+    sidebar.classList.toggle('hidden');
+    companyLogo.style.display = 'none';
+    crossButton.style.display = 'block';
+    mainContent.classList.toggle('expanded');
+});
+
+crossButton.addEventListener('click', function() {
+    sidebar.classList.toggle('hidden');
+    mainContent.classList.toggle('expanded');
+    companyLogo.style.display = companyLogo.style.display === 'none' || companyLogo.style.display === '' ? 'block' : 'none';
+    crossButton.style.display = companyLogo.style.display === 'block' ? 'none' : 'block';
+});
+
+if (profileData) {
+    profileElement.innerHTML = `
+        <img src="${profileData.profileUrl || '../assets/profile.png'}" width="60" height="60" alt="" />
+        <div>
+            <p>${profileData.name}</p>
+        </div>
+    `;
+    nameElement.textContent = profileData.name;
+} else {
+    console.error("Profile data not found in localStorage.");
+}
 
 function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
-
-  function showModal(jobData) {
+function showModal(jobData) {
     document.getElementById('companyLogo').src = jobData.logourl;
     document.getElementById('titleName').textContent = jobData.titleName;
     document.getElementById('companyName').textContent = jobData.companyName;
@@ -80,41 +61,32 @@ function formatDate(dateString) {
     document.getElementById('appliedDate').textContent = formatDate(jobData.appliedDate);
     document.getElementById('resumeViewed').textContent = jobData.resumeViewed ? 'Yes' : 'No';
     document.getElementById('comments').textContent = jobData.comments || 'Comments not provided';
-    document.getElementById('updatedDate').textContent = jobData.updatedDate ? formatDate(jobData.updatedDate): 'Not yet updated';
-    
-    const modal = document.getElementById("jobModal");
+    document.getElementById('updatedDate').textContent = jobData.updatedDate ? formatDate(jobData.updatedDate) : 'Not yet updated';
     modal.style.display = "block";
-  }
+}
 
-  document.querySelector(".close").onclick = function() {
-    const modal = document.getElementById("jobModal");
+closeModalButton.onclick = function() {
     modal.style.display = "none";
-  }
+}
 
-  window.onclick = function(event) {
-    const modal = document.getElementById("jobModal");
-    if (event.target == modal) {
-      modal.style.display = "none";
+window.onclick = function(event) {
+    if (event.target === modal) {
+        modal.style.display = "none";
     }
-  }
-  var jobhistory
-  const itemsPerPage = 5;
-let currentPage = 1;
-  try {
- jobhistory = await fetchData("api/JobActivity/user/appliedjobs");
- console.log(jobhistory)
+}
+
+try {
+    jobHistory = await fetchData("api/JobActivity/user/appliedjobs");
 
 } catch (error) {
     if (error.message.includes("404")) {
-    document.querySelector(".tab-container").style.display='none'
-    document.querySelector(".applications-list").style.display='none'
-    document.querySelector(".description").style.display='none'
-    document.querySelector(".notfound").style.display='block'
-
+        document.querySelector(".tab-container").style.display = 'none';
+        document.querySelector(".applications-list").style.display = 'none';
+        document.querySelector(".description").style.display = 'none';
+        document.querySelector(".notfound").style.display = 'block';
+    } else {
+        showToast('error', 'Server Error', 'Server error. Please try again later.');
     }
-       else {            showToast('error', 'Server Error', 'Server error. Please try again later.');
-      } 
-
 }
 
 function renderTable(page, filteredJobs) {
@@ -129,7 +101,7 @@ function renderTable(page, filteredJobs) {
         tr.innerHTML = `
             <td>${i + 1}</td>
             <td>
-                <img src="${row.logourl ? row.logourl :"../assets/Company.png"}" alt="${row.companyName} logo" style="width:50px; height:auto; vertical-align:middle; margin-right:10px;">
+                <img src="${row.logourl || '../assets/Company.png'}" alt="${row.companyName} logo" style="width:50px; height:auto; vertical-align:middle; margin-right:10px;">
                 ${row.companyName}
             </td>
             <td>${row.titleName}</td>
@@ -140,40 +112,28 @@ function renderTable(page, filteredJobs) {
             showModal(row);
         });
         tableBody.appendChild(tr);
-        
     }
 }
 
 function getStatusClass(status) {
     switch (status) {
-        case "Applied":
-            return "status Applied";
-        case "Hired":
-            return "status Hired";
-        case "Interviewed":
-            return "status Interviewed";
-        case "Rejected":
-            return "status Rejected";
-        default:
-            return "status";
+        case "Applied": return "status Applied";
+        case "Hired": return "status Hired";
+        case "Interviewed": return "status Interviewed";
+        case "Rejected": return "status Rejected";
+        default: return "status";
     }
 }
 
 function renderPagination(filteredJobs) {
-    const pagination = document.getElementById("pagination");
     pagination.innerHTML = "";
-
     const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
 
     const createButton = (text, isActive = false, isDisabled = false) => {
         const button = document.createElement("button");
         button.textContent = text;
-        if (isActive) {
-            button.classList.add("active");
-        }
-        if (isDisabled) {
-            button.disabled = true;
-        }
+        if (isActive) button.classList.add("active");
+        if (isDisabled) button.disabled = true;
         button.addEventListener("click", function() {
             if (!isDisabled) {
                 currentPage = parseInt(text) || currentPage + (text === '>' ? 1 : -1);
@@ -184,7 +144,6 @@ function renderPagination(filteredJobs) {
         return button;
     };
 
-    // Previous button
     pagination.appendChild(createButton("<", false, currentPage === 1));
 
     if (totalPages <= 7) {
@@ -210,54 +169,32 @@ function renderPagination(filteredJobs) {
 }
 
 function updateCategoryCounts() {
-    const allCount = jobhistory.length;
-    const AppliedCount = jobhistory.filter((item) => item.applicationstatus === "Applied").length;
-    const InterviewedCount = jobhistory.filter((item) => item.applicationstatus === "Interviewed").length;
-    const HiredCount = jobhistory.filter((item) => item.applicationstatus === "Hired").length;
-    const RejectedCount = jobhistory.filter((item) => item.applicationstatus === "Rejected").length;
-
-    document.getElementById("allCount").textContent = allCount;
-    document.getElementById("AppliedCount").textContent = AppliedCount;
-    document.getElementById("InterviewedCount").textContent = InterviewedCount;
-    document.getElementById("HiredCount").textContent = HiredCount;
-    document.getElementById("RejectedCount").textContent = RejectedCount;
+    document.getElementById("allCount").textContent = jobHistory.length;
+    document.getElementById("AppliedCount").textContent = jobHistory.filter(item => item.applicationstatus === "Applied").length;
+    document.getElementById("InterviewedCount").textContent = jobHistory.filter(item => item.applicationstatus === "Interviewed").length;
+    document.getElementById("HiredCount").textContent = jobHistory.filter(item => item.applicationstatus === "Hired").length;
+    document.getElementById("RejectedCount").textContent = jobHistory.filter(item => item.applicationstatus === "Rejected").length;
 }
 
 updateCategoryCounts();
-renderTable(currentPage, jobhistory);
-renderPagination(jobhistory);
-const tabs = document.querySelectorAll('.tab-item');
+renderTable(currentPage, jobHistory);
+renderPagination(jobHistory);
 
-tabs.forEach((tab, index) => {
+document.querySelectorAll('.tab-item').forEach((tab, index) => {
     tab.addEventListener('click', function(event) {
         event.preventDefault();
+        document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+        tab.classList.add('active');
 
-        tabs.forEach(item => item.classList.remove('active'));
-        this.classList.add('active');
-
-        let filteredJobs = jobhistory;
+        let filteredJobs = jobHistory;
         switch (index) {
-            case 0:
-                filteredJobs = jobhistory;
-                break;
-            case 1:
-                filteredJobs = jobhistory.filter(job => job.applicationstatus === 'Applied');
-                break;
-            case 2:
-                filteredJobs = jobhistory.filter(job => job.applicationstatus === 'Interviewed');
-                break;
-            case 3:
-                filteredJobs = jobhistory.filter(job => job.applicationstatus === 'Hired');
-                break;
-            case 4:
-                filteredJobs = jobhistory.filter(job => job.applicationstatus === 'Rejected');
-                break;
+            case 1: filteredJobs = jobHistory.filter(job => job.applicationstatus === 'Applied'); break;
+            case 2: filteredJobs = jobHistory.filter(job => job.applicationstatus === 'Interviewed'); break;
+            case 3: filteredJobs = jobHistory.filter(job => job.applicationstatus === 'Hired'); break;
+            case 4: filteredJobs = jobHistory.filter(job => job.applicationstatus === 'Rejected'); break;
         }
-console.log(filteredJobs)
         currentPage = 1; 
         renderTable(currentPage, filteredJobs);
         renderPagination(filteredJobs);
     });
 });
-
-

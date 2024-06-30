@@ -21,13 +21,7 @@ if(!localStorage.getItem('authToken'))
   const viewResumeBtn = document.querySelector('.View-Resume');
   const editProfileBtn = document.querySelector(".Edit-profile");
   const profileSubmitBtn = document.getElementById("Profile-submitBtn-update");
-  const fileInput = document.getElementById("edit-profilePhoto");
-  const removeFileBtn = document.getElementById("remove-file-btn");
   const addProfileModal = document.getElementById("addProfileModal");
-  const addProfileModalForm = document.getElementById("addProfileModalForm");
-  const fileNameDisplay = document.getElementById("file-name");
-  const uploadInstruction = document.getElementById("upload-instruction");
-  const fileTypes = document.getElementById("file-types");
   const editNameInput = document.getElementById("edit-name");
   const editLocationInput = document.getElementById("edit-location");
   const aboutMeText = document.getElementById("about-me-text");
@@ -57,6 +51,9 @@ if(!localStorage.getItem('authToken'))
   const educationsContainer = document.querySelector(".educations");
   const addAreaOfInterestForm = document.getElementById("addAreaOfInterestForm");
   const addAreaOfInterestModal = document.getElementById("addAreaOfInterestModal");
+  
+  const fileInputProfile = document.getElementById('edit-profilePhoto');
+  const fileInputResume = document.getElementById('edit-resume');
   const updateAoiBtn = document.getElementById("update-aoi-btn");
   const addAoiBtn = document.getElementById("add-aoi-btn");
   const aoiContainer = document.querySelector(".aoi-items");
@@ -68,12 +65,12 @@ if(!localStorage.getItem('authToken'))
   
 
 
+
   menuButton.addEventListener('click', function() {
     sidebar.classList.toggle('hidden');
     companyLogo.style.display = 'none';
     crossButton.style.display = 'block';
     mainContent.classList.toggle('expanded');
-
   });
 
   crossButton.addEventListener('click', function() {
@@ -94,13 +91,27 @@ if(!localStorage.getItem('authToken'))
     $("#title-list").select2();
   });
   var userprofile=[],jobTitles=[],companies=[],skillsArray=[]
-
   try{
-     companies = await fetchData("api/Company");
+  companies = await fetchData("api/Company");
+  }
+  catch(e){}
+  try{
+ 
+    skillsArray = await fetchData("api/Skill");
+
+
+    }
+    catch(e){}
+    try{
+      jobTitles = await fetchData("api/Title");
+
+      }
+      catch(e){}
+  try{
      userprofile = await fetchData("api/User/profile");
 
      
-     console.log(userprofile)
+
      
 
 
@@ -111,9 +122,7 @@ if(!localStorage.getItem('authToken'))
 
       </div>
     `;
- 
-     skillsArray = await fetchData("api/Skill");
-     jobTitles = await fetchData("api/Title");
+
 
   }
   catch
@@ -131,10 +140,9 @@ if(!localStorage.getItem('authToken'))
   const educations = userprofile.educations;
   const experiences = userprofile.experiences;
   var UserSkillsArray = userprofile.userSkills;
-  var selected_values=UserSkillsArray
+  var selected_values=UserSkillsArray 
   var useraoi = userprofile.areasOfInterests;
 
-console.log(selected_values)
 
   const profilePicture = userprofile.profilePictureUrl || "../assets/profile.png";
   profilePictureContainer.innerHTML = `<img src="${profilePicture+'?date='+Date.now()}" alt="User Profile Picture" />`;
@@ -202,8 +210,8 @@ document.querySelector('.detail-text.portfolio').innerHTML = userprofile.portfol
       showToast('warning', 'Warning', 'Phone number must be 10 digits.');
       return;
     }
-    if (address.length > 25) {
-      showToast('warning', 'Warning', 'Address  should not exceed 25 characters.');
+    if (address.length > 60) {
+      showToast('warning', 'Warning', 'Address  should not exceed 60 characters.');
       return;
     }
     if (portfolioLink.length > 200) {
@@ -280,126 +288,214 @@ document.querySelector('.detail-text.portfolio').innerHTML = userprofile.portfol
       addProfileModal.style.display = "block";
   });
 
-  profileSubmitBtn.addEventListener('click', async (event) => {
-      event.preventDefault();
-      if (! editNameInput.value.trim() || ! editLocationInput.value.trim() ) {
-        showToast('warning', 'Warning', 'Please fill in all required fields.');
-        return;
-      }
-    
-      const updatedProfile = {
-          dob: userprofile.dob,
-          name: editNameInput.value,
-          address: userprofile.address,
-          city: editLocationInput.value,
-          portfolioLink: userprofile.portfolioLink,
-          phoneNumber: userprofile.phoneNumber,
-          resumeUrl: userprofile.resumeUrl,
-          aboutMe: userprofile.aboutMe,
-      };
 
+
+  
+  const removeFileBtnProfile = document.getElementById('remove-file-btn-profile');
+  const removeFileBtnResume = document.getElementById('remove-file-btn-resume');
+  profileSubmitBtn.addEventListener('click', async (event) => {
+    event.preventDefault();
+  
+    if (!editNameInput.value.trim() || !editLocationInput.value.trim()) {
+      showToast('warning', 'Warning', 'Please fill in all required fields.');
+      return;
+    }
+  
+    let profileChanged = false;
+  
+    const updatedProfile = {
+      dob: userprofile.dob,
+      name: editNameInput.value,
+      address: userprofile.address,
+      city: editLocationInput.value,
+      portfolioLink: userprofile.portfolioLink,
+      phoneNumber: userprofile.phoneNumber,
+      resumeUrl: userprofile.resumeUrl,
+      aboutMe: userprofile.aboutMe,
+    };
+  
+
+    if (userprofile.name !== updatedProfile.name || userprofile.city !== updatedProfile.city) {
+      profileChanged = true;
+    }
+  
+    if (profileChanged) {
       try {
         const updateResponse = await fetchData(`api/User/update`, "PUT", updatedProfile);
-        
-
+  
         userprofile.city = updateResponse.city;
         userprofile.name = updateResponse.name;
-        
-
-        userName.innerText = userprofile.name;
-        userLocation.innerHTML = `
+  
+        document.getElementById('name').innerText = userprofile.name;
+        document.getElementById('location').innerHTML = `
           <img src="../assets/profile-location-icon.svg" alt="Location Icon"> ${userprofile.city}
         `;
   
         profileElement.innerHTML = `
-     <img src="${userprofile.profilePictureUrl?userprofile.profilePictureUrl+'?date='+Date.now() :'../assets/profile.png' }" width="60" height="60" alt="" />
-      <div>
-        <p>${userprofile.name.split(' ')[0]}</p>
-
-      </div>`
-
-      
-localStorage.setItem("profile", JSON.stringify(   {name: userprofile.name.split(' ')[0],
-name: userprofile.name,
-profileUrl: userprofile.profilePictureUrl}));
+          <img src="${userprofile.profilePictureUrl ? userprofile.profilePictureUrl + '?date=' + Date.now() : '../assets/profile.png'}" width="60" height="60" alt="" />
+          <div>
+            <p>${userprofile.name.split(' ')[0]}</p>
+          </div>
+        `;
+  
+        localStorage.setItem("profile", JSON.stringify({
+          name: userprofile.name.split(' ')[0],
+          profileUrl: userprofile.profilePictureUrl
+        }));
+  
         showToast('success', 'Success', 'Profile updated successfully');
       } catch (error) {
         console.error("Error updating profile:", error);
-      
+  
         if (error.message.includes("401")) {
           showToast('error', 'Unauthorized', 'Unauthorized access. Please login again.');
-
         } else if (error.message.includes("404")) {
           showToast('error', 'Not Found', 'User profile not found.');
         } else {
           showToast('error', 'Error', 'An error occurred while updating profile.');
         }
       }
-      
+    }
+  
 
-      const profilePic = fileInput.files[0];
-      if (profilePic) {
-          const formData = new FormData();
-          formData.append("logo", profilePic);
-
-          try {
-            const uploadResponse = await fetchData("api/User/upload-User-profilepicture", "POST", formData, true);
-   
-            
-
-            profilePictureContainer.innerHTML = `<img src="${uploadResponse.logoUrl}" alt="User Profile Picture" />`;
-            
-
-            userprofile.profilePictureUrl = uploadResponse.logoUrl+'?date='+Date.now();
-              profileElement.innerHTML = `
-           <img src="${userprofile.profilePictureUrl?userprofile.profilePictureUrl+'?date='+Date.now() :'../assets/profile.png' }" width="60" height="60" alt="" />
-            <div>
-              <p>${userprofile.name.split(' ')[0]}</p>
-
-            </div>`
-
-            
-    localStorage.setItem("profile", JSON.stringify(   {name: userprofile.name.split(' ')[0],
-      name: userprofile.name,
-      profileUrl: userprofile.profilePictureUrl}));
-            showToast('success', 'Success', 'Profile picture uploaded successfully');
-          } catch (error) {
-            console.error("Error uploading profile picture:", error);
-          
-            if (error.message.includes("401")) {
-              showToast('error', 'Unauthorized', 'Unauthorized access. Please login again.');
-
-            } else if (error.message.includes("500")) {
-              showToast('error', 'Server Error', 'Server error. Please try again later.');
-            } else {
-              showToast('error', 'Error', 'An error occurred while uploading profile picture.');
-            }
-          }
-          
-          
+    const profilePic = fileInputProfile.files[0];
+    if (profilePic) {
+      const formDataProfile = new FormData();
+      formDataProfile.append("logo", profilePic);
+  
+      try {
+        const uploadResponse = await fetchData("api/User/upload-User-profilepicture", "POST", formDataProfile, true);
+  
+        userprofile.profilePictureUrl = uploadResponse.logoUrl + '?date=' + Date.now();
+        profilePictureContainer.innerHTML = `<img src="${userprofile.profilePictureUrl}" alt="User Profile Picture" />`;
+        profileElement.innerHTML = `
+          <img src="${userprofile.profilePictureUrl}" width="60" height="60" alt="" />
+          <div>
+            <p>${userprofile.name.split(' ')[0]}</p>
+          </div>
+        `;
+  
+        localStorage.setItem("profile", JSON.stringify({
+          name: userprofile.name.split(' ')[0],
+          profileUrl: userprofile.profilePictureUrl
+        }));
+  
+        showToast('success', 'Success', 'Profile picture uploaded successfully');
+        fileInputProfile.value = '';
+        updateFileInputDisplay(
+          fileInputProfile,
+    
+          document.querySelector('.photo-file-name'),
+          document.querySelector('.photo-input'),
+    
+          removeFileBtnProfile
+    
+        );
+      } catch (error) {
+        console.error("Error uploading profile picture:", error);
+  
+        if (error.message.includes("400")) {
+          showToast('error', 'Error', 'Please select only PNG or JPEG files.');
+        } else if (error.message.includes("500")) {
+          showToast('error', 'Server Error', 'Server error. Please try again later.');
+        } else {
+          showToast('error', 'Error', 'An error occurred while uploading the profile picture.');
+        }
       }
+    }
+  
 
-      addProfileModal.style.display = "none";
-      addProfileModalForm.reset();
+    const resumeFile = fileInputResume.files[0];
+    if (resumeFile) {
+      const formDataResume = new FormData();
+      formDataResume.append("file", resumeFile);
+  
+      try {
+        const uploadResponse = await fetchData("api/Resume/upload", "POST", formDataResume, true);
+        userprofile.resumeUrl = uploadResponse.resumeUrl;
+  
+        showToast('success', 'Success', 'Resume uploaded successfully');
+
+        fileInputResume.value = '';
+        updateFileInputDisplay(
+          fileInputResume,
+          document.querySelector('.resume-file-name'),
+          document.querySelector('.resume-input'),
+          removeFileBtnResume
+        );
+      
+      } catch (error) {
+        console.error("Error uploading resume:", error);
+  
+        if (error.message.includes("401")) {
+          showToast('error', 'Unauthorized', 'Unauthorized access. Please login again.');
+        } else if (error.message.includes("500")) {
+          showToast('error', 'Server Error', 'Server error. Please try again later.');
+        } else {
+          showToast('error', 'Error', 'An error occurred while uploading the resume.');
+        }
+      }
+    }
+  
+    addProfileModal.style.display = "none";
+  });
+  
+
+
+  const updateFileInputDisplay = (fileInput, fileNameDisplay, uploadInstruction, removeFileBtn) => {
+
+    const fileName = fileInput.files[0] ? fileInput.files[0].name : '';
+    fileNameDisplay.textContent = fileName;
+    
+    uploadInstruction.style.display = fileName ? "none" : "block";
+    removeFileBtn.style.display = fileName ? "block" : "none";
+  };
+
+  removeFileBtnProfile.addEventListener('click', () => {
+    fileInputProfile.value = '';
+    updateFileInputDisplay(
+      fileInputProfile,
+
+      document.querySelector('.photo-file-name'),
+      document.querySelector('.photo-input'),
+
+      removeFileBtnProfile
+
+    );
   });
 
-  removeFileBtn.addEventListener('click', () => {
-      fileInput.value = '';
-      fileNameDisplay.textContent = '';
-      uploadInstruction.style.display = "block";
-      fileTypes.style.display = "block";
-      removeFileBtn.style.display = "none";
+  
+  fileInputProfile.addEventListener('change', () => {
+    updateFileInputDisplay(
+      fileInputProfile,
+      document.querySelector('.photo-file-name'),
+      document.querySelector('.photo-input'),
+      
+      removeFileBtnProfile
+    );
+
+
+
+
+    removeFileBtnResume.addEventListener('click', () => {
+      fileInputResume.value = '';
+      updateFileInputDisplay(
+        fileInputResume,
+        document.querySelector('.resume-file-name'),
+        document.querySelector('.resume-input'),
+        removeFileBtnResume
+      );
+    });
   });
 
-  fileInput.addEventListener('change', (event) => {
-      const fileName = event.target.files[0] ? event.target.files[0].name : '';
-      fileNameDisplay.textContent = fileName;
-      uploadInstruction.style.display = fileName ? "none" : "block";
-      fileTypes.style.display = fileName ? "none" : "block";
-      removeFileBtn.style.display = fileName ? "block" : "none";
+  fileInputResume.addEventListener('change', () => {
+    updateFileInputDisplay(
+      fileInputResume,
+      document.querySelector('.resume-file-name'),
+      document.querySelector('.resume-input'),
+      removeFileBtnResume
+    );
   });
-
- 
 
   editAboutMeBtn.addEventListener("click", editAboutMeHandler);
 
@@ -411,7 +507,7 @@ profileUrl: userprofile.profilePictureUrl}));
       textarea.style.width = "100%";
       textarea.style.height = "130px";
       textarea.id = "about-me-textarea";
-      textarea.maxLength = 255;
+      textarea.maxLength = 400;
       textarea.value = aboutMeTextContent;
 
       aboutMeContainer.innerHTML = "";
@@ -1048,7 +1144,7 @@ updateAoiBtn.addEventListener("click", async function (event) {
   
     showToast('success', 'Success', 'Area of Interest updated successfully');
   } catch (error) {
-    console.log(err)
+
     if (error.message.includes("400")) {
       showToast('error', 'Error', 'Enter proper input');
     } else if (error.message.includes("404")) {
@@ -1107,7 +1203,7 @@ document.querySelectorAll('.close').forEach(closeBtn => {
   });
 
   document.getElementById("edit-skills-btn").addEventListener("click", 
-    async function (event) {
+    async function () {
       Updateskills = Updateskills.map((skill) => ({
         skillId: skill.value,
         skillName: skill.label,

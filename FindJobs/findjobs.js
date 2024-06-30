@@ -2,15 +2,10 @@ import { showToast } from "../Package/toaster.js";
 import { fetchData } from "../Package/api.js";
 
 
+  if (!localStorage.getItem("authToken")) {
+    window.location.href = "/Auth/login.html?authid=3";
+  }
 
-
-document.addEventListener("DOMContentLoaded", async function () {
-  if(!localStorage.getItem('authToken'))
-    {
-      window.location.href = "/Auth/login.html?authid=3";
-
-    }
-    
   document.getElementById("cross").style.display = "none";
   document.getElementById("sidebar").classList.toggle("hidden");
   document.getElementById("company-logo").style.display = "none";
@@ -57,42 +52,37 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const profileData = JSON.parse(localStorage.getItem("profile"));
 
-
   if (profileData) {
     const profileElement = document.querySelector(".profile");
-  
-  
+
     if (profileElement) {
       profileElement.innerHTML = `
-    <img src="${profileData.profileUrl?profileData.profileUrl :'../assets/profile.png' }" width="60" height="60" alt="" />
+    <img src="${
+      profileData.profileUrl ? profileData.profileUrl : "../assets/profile.png"
+    }" width="60" height="60" alt="" />
         <div>
           <p>${profileData.name}</p>
     
         </div>
       `;
     }
-  
-    const nameElement = document.querySelector('.name');
-  
-  
+
+    const nameElement = document.querySelector(".name");
+
     if (nameElement) {
       nameElement.textContent = profileData.name;
     }
   } else {
     console.error("Profile data not found in localStorage.");
   }
-try{
-  const companies = await fetchData("api/Company");
+  try {
+    const companies = await fetchData("api/Company");
 
-  const jobTitles = await fetchData("api/Title");
-  populateData("title-list", jobTitles, "titleName", "titleId");
+    const jobTitles = await fetchData("api/Title");
+    populateData("title-list", jobTitles, "titleName", "titleId");
 
-  populateData("company-list", companies, "companyName", "companyId");
-}
-catch
-{
-
-}
+    populateData("company-list", companies, "companyName", "companyId");
+  } catch {}
 
   function populateData(
     selectId,
@@ -116,7 +106,6 @@ catch
       select.appendChild(optionElement);
     });
   }
-
 
   const elements = document.querySelectorAll(
     ".select2-container--default .select2-selection--single"
@@ -146,17 +135,17 @@ catch
       content.classList.toggle("hidden");
     });
   });
-  let maxpagereached=false
+  let maxpagereached = false;
   async function GetJobs(pageNumber, pageSize) {
-    maxpagereached=false
+    maxpagereached = false;
     try {
       return await fetchData(
         `api/User/recommended-jobs?pageNumber=${pageNumber}&pageSize=${pageSize}`
       );
     } catch (error) {
-      if ( error.message.includes("404")) {
-        maxpagereached=true
-      } 
+      if (error.message.includes("404")) {
+        maxpagereached = true;
+      }
       return [];
     }
   }
@@ -170,10 +159,13 @@ catch
   let currentPage = 1;
   let currentGridPage = 1;
 
-  let totalPages = jobItems.length > itemsPerPage ? Math.ceil(jobItems.length / itemsPerPage) : 1;
+  let totalPages =
+    jobItems.length > itemsPerPage
+      ? Math.ceil(jobItems.length / itemsPerPage)
+      : 1;
   let gridview = false;
   let isfiltered = false;
-  
+
   function getJobTypeClass(status) {
     switch (status) {
       case "FullTime":
@@ -190,59 +182,72 @@ catch
         return "FullTime";
     }
   }
-  
+
   async function renderTable(pageNumber, itemsPerPage, gridview, isfiltered) {
     if (gridview) itemsPerPage = itemsPerPage * 2;
     const startIndex = (pageNumber - 1) * itemsPerPage;
     let endIndex = startIndex + itemsPerPage;
-    if (endIndex > jobItems.length-6) {
-
+    if (endIndex > jobItems.length - 6) {
       let additionalData;
-      if(!maxpagereached)
-        {
-      if (isfiltered) {
-        additionalData = await updateSearchCriteria(1+Math.floor( jobItems.length/24), 24);
-        jobItems = jobItems.concat(additionalData);
-      } else {
-        additionalData = await GetJobs(1+Math.floor( jobItems.length/24), 24);
-        jobItems = jobItems.concat(additionalData);
+      if (!maxpagereached) {
+        if (isfiltered) {
+  
+          additionalData = await updateSearchCriteria(
+            1 + Math.ceil(jobItems.length / 24),
+            24
+          );
+
+          jobItems = jobItems.concat(additionalData);
+        } else {
+          additionalData = await GetJobs(
+            1 + Math.ceil(jobItems.length / 24),
+            24
+          );
+          jobItems = jobItems.concat(additionalData);
+        }
       }
-
-    }
- 
-
-
     }
 
     endIndex = Math.min(endIndex, jobItems.length);
-  
+
     jobList.innerHTML = "";
     for (let i = startIndex; i < endIndex; i++) {
       if (i >= jobItems.length) break;
       const jobItem = jobItems[i];
       const jobItemDiv = document.createElement("div");
       jobItemDiv.classList.add("job-item");
-      jobItem.companylogo = jobItem.companylogo ? jobItem.companylogo : "../assets/Company.png";
-      const button = gridview ? "" : `<button class="apply-button" onclick="applyToJob('${jobItem.jobId}')">Apply</button>`;
+      jobItem.companylogo = jobItem.companylogo
+        ? jobItem.companylogo
+        : "../assets/Company.png";
+      const button = gridview
+        ? ""
+        : `<button class="apply-button" onclick="event.stopPropagation();applyToJob(this,'${jobItem.jobId}')">Apply</button>`;
       jobItemDiv.innerHTML = `
         <img src="${jobItem.companylogo}" width="90" alt="${jobItem.titleName}">
         <div class="company-details">
           <h3>${jobItem.titleName}</h3>
-          <p>${jobItem.companyName} • ${jobItem.experienceRequired} yrs Experience</p>
-          <span class="meta-tags ${getJobTypeClass(jobItem.jobType)}">${jobItem.jobType}</span>
+          <p>${jobItem.companyName} • ${
+        jobItem.experienceRequired>0  ?jobItem.experienceRequired + " yrs Experience":"No Experience Required"
+      } </p>
+          <span class="meta-tags ${getJobTypeClass(jobItem.jobType)}">${
+        jobItem.jobType
+      }</span>
         </div>
         ${button}`;
 
-        jobItemDiv.addEventListener("click", function() {
-          showModal(jobItem);
+      jobItemDiv.addEventListener("click", function () {
+        showModal(jobItem);
       });
       jobList.appendChild(jobItemDiv);
     }
-    totalPages = jobItems.length > itemsPerPage ? Math.ceil(jobItems.length / itemsPerPage) : 1;
+    totalPages =
+      jobItems.length > itemsPerPage
+        ? Math.ceil(jobItems.length / itemsPerPage)
+        : 1;
 
     renderPagination(totalPages);
   }
-  
+
   function renderPagination(totalPages) {
     const pagination = document.getElementById("pagination");
     pagination.innerHTML = "";
@@ -257,9 +262,9 @@ catch
       }
       button.addEventListener("click", function () {
         if (!isDisabled) {
-          console.log(currentPage,totalPages)
-    
-currentPage = parseInt(text) || currentPage + (text === ">" ? 1 : -1);
+
+
+          currentPage = parseInt(text) || currentPage + (text === ">" ? 1 : -1);
           renderTable(currentPage, itemsPerPage, gridview, isfiltered);
         }
       });
@@ -278,12 +283,17 @@ currentPage = parseInt(text) || currentPage + (text === ">" ? 1 : -1);
       for (let i = startPage; i <= endPage; i++) {
         pagination.appendChild(createButton(i, i === currentPage));
       }
-      if (currentPage < totalPages - 3) pagination.appendChild(createButton("..."));
-      pagination.appendChild(createButton(totalPages, currentPage === totalPages));
+      if (currentPage < totalPages - 3)
+        pagination.appendChild(createButton("..."));
+      pagination.appendChild(
+        createButton(totalPages, currentPage === totalPages)
+      );
     }
-    pagination.appendChild(createButton(">", false, currentPage === totalPages));
+    pagination.appendChild(
+      createButton(">", false, currentPage === totalPages)
+    );
   }
-  
+
   listViewButton.addEventListener("click", () => {
     gridview = false;
     currentPage = 1;
@@ -293,11 +303,13 @@ currentPage = parseInt(text) || currentPage + (text === ">" ? 1 : -1);
     jobList.classList.add("list-view");
     listViewButton.classList.add("active");
     gridViewButton.classList.remove("active");
-    document.querySelectorAll(".apply-button").forEach((btn) => (btn.style.display = "block"));
+    document
+      .querySelectorAll(".apply-button")
+      .forEach((btn) => (btn.style.display = "block"));
     document.getElementById("list-view-img").src = "../assets/list-active.svg";
     document.getElementById("grid-view-img").src = "../assets/grid.svg";
   });
-  
+
   gridViewButton.addEventListener("click", () => {
     gridview = true;
     currentPage = 1;
@@ -307,129 +319,129 @@ currentPage = parseInt(text) || currentPage + (text === ">" ? 1 : -1);
     jobList.classList.add("grid-view");
     gridViewButton.classList.add("active");
     listViewButton.classList.remove("active");
-    document.querySelectorAll(".apply-button").forEach((btn) => (btn.style.display = "none"));
+    document
+      .querySelectorAll(".apply-button")
+      .forEach((btn) => (btn.style.display = "none"));
     document.getElementById("list-view-img").src = "../assets/list.svg";
     document.getElementById("grid-view-img").src = "../assets/grid-active.svg";
   });
-  
+
   renderTable(currentPage, itemsPerPage, gridview, isfiltered);
-  
 
-
-  window.applyToJob = async function (jobId) {
-    console.log("Applying to job with ID:", jobId);
+  window.applyToJob = async function (button,jobId) {
+ 
     try {
       await fetchData(`api/JobActivity/apply?jobId=${jobId}`, "POST");
-  
+
       showToast("success", "Success", "Applied Sucessfully.");
+      
+              button.style.backgroundColor="#e0e8ff"
+      button.style.color="rgba(70, 64, 222, 1)"
     } catch (error) {
       if (error.message.includes("404")) {
         showToast("error", "Application Failed", "Job not Found.");
       } else if (error.message.includes("409")) {
         showToast("warning", "Warming", "Already Applied.");
+              button.style.backgroundColor="#e0e8ff"
+      button.style.color="rgba(70, 64, 222, 1)"
       } else {
         showToast("error", "An error occurred", " Please Apply again Later");
       }
     }
+  };
+
+  function formatDate(dateString) {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   }
-
-//   {
-//     "status": true,
-//     "jobId": "c94de525-63e8-400b-8357-bb9004a57ef9",
-//     "companylogo": "http://localhost:9000/job-portal-application/company-logo/a51cc874-78a8-486b-8094-666572b4ae0b.jpg",
-//     "datePosted": "2024-06-26T00:00:00",
-//     "titleId": "7306797b-2165-4605-b8f2-5a3e75274371",
-//     "companyName": "Genspark Company",
-//     "jobDescription": "Ensure quality and performance of software products through rigorous testing.",
-//     "lpa": 10,
-//     "experienceRequired": 13,
-//     "titleName": "Artificial Intelligence Engineer",
-//     "jobType": "Hybrid",
-//     "skills": [
-//         {
-//             "skillId": "cb9be326-e09d-4772-a8fb-09cb58548ffa",
-//             "skillName": "Docker"
-//         },
-//         {
-//             "skillId": "39110fc7-d37d-47d4-a3d4-0e4553b4d73a",
-//             "skillName": "Objective-C"
-//         }
-//     ]
-// }
-
-function formatDate(dateString) {
-  const options = { year: "numeric", month: "long", day: "numeric" };
-  return new Date(dateString).toLocaleDateString(undefined, options);
-}
   function showModal(jobData) {
-    console.log(jobData)
-    document.getElementById('companyLogo').src = jobData.companylogo;
-    document.getElementById('titleName').textContent = jobData.titleName;
-    document.getElementById('companyName').textContent = jobData.companyName;
-    document.getElementById('jobType').textContent = jobData.jobType;
-    document.getElementById('Experience').textContent =  jobData.experienceRequired>0?  jobData.experienceRequired+ ' Years': 'No experience Required'
-    document.getElementById('posteddate').textContent = formatDate(jobData.datePosted);
-    document.getElementById('lpa').textContent = jobData.lpa ?   jobData.lpa+' Lpa' : "Not Mentioned"
 
+    document.getElementById("companyLogo").src = jobData.companylogo;
+    document.getElementById("titleName").textContent = jobData.titleName;
+    document.getElementById("companyName").innerHTML =  jobData.companyName;
+    document.getElementById("jobType").textContent = jobData.jobType;
+    document.getElementById("Experience").textContent =
+      jobData.experienceRequired > 0
+        ? jobData.experienceRequired + " Years"
+        : "No experience Required";
+    document.getElementById("posteddate").textContent = formatDate(
+      jobData.datePosted
+    );
+    document.getElementById("lpa").textContent = jobData.lpa
+      ? jobData.lpa + " Lpa"
+      : "Not Mentioned";
+      const skillsList = document.querySelector(".skills-list");
+      skillsList.innerHTML = "";
     
+      jobData.skills.length >0
+?      jobData.skills.forEach(skill => {
+        const skillItem = document.createElement("div");
+        skillItem.classList.add("skill-item");
+        skillItem.textContent = skill.skillName;
+        skillsList.appendChild(skillItem);
+      })
+      :skillsList.textContent="no skills Required"
+      document.querySelector('.model-apply-button').innerHTML= gridview ? `<button  class="apply-button"  onclick="event.stopPropagation();applyToJob(this,'${jobData.jobId}')">Apply</button>` : '';
     const modal = document.getElementById("jobModal");
     let circularProgress = document.querySelector(".circular-progress"),
-    progressValue = document.querySelector(".progress-value");
+      progressValue = document.querySelector(".progress-value");
 
-let progressStartValue = 0,    
-    progressEndValue = jobData.jobscrore >0 ? jobData.jobscrore:1,    
-    speed = 10;
-    
-let progress = setInterval(() => {
-    progressStartValue++;
+    let progressStartValue = 0,
+      progressEndValue =
+        jobData.jobscrore > 0 ? Math.ceil(jobData.jobscrore) : 1,
+      speed = 50;
 
-    progressValue.textContent = `${progressStartValue}%`
-    circularProgress.style.background = `conic-gradient(#7d2ae8 ${progressStartValue * 3.6}deg, #ededed 0deg)`
+    let progress = setInterval(() => {
+      progressStartValue++;
 
-    if(progressStartValue == progressEndValue){
+      progressValue.textContent = `${progressStartValue}%`;
+      circularProgress.style.background = `conic-gradient(#7d2ae8 ${
+        progressStartValue * 3.6
+      }deg, #ededed 0deg)`;
+
+      if (progressStartValue == progressEndValue) {
         clearInterval(progress);
-    }    
-}, speed);
+      }
+    }, speed);
     modal.style.display = "block";
   }
 
-  document.querySelector(".close").onclick = function() {
+  document.querySelector(".close").onclick = function () {
     const modal = document.getElementById("jobModal");
     modal.style.display = "none";
-  }
+  };
 
-  window.onclick = function(event) {
+  window.onclick = function (event) {
     const modal = document.getElementById("jobModal");
     if (event.target == modal) {
       modal.style.display = "none";
     }
-  }
+  };
 
-
-  async function updateSearchCriteria(PageNumber,PageSize) {
+  async function updateSearchCriteria(PageNumber, PageSize) {
     document.querySelector(".job-header h1").textContent = "All Jobs";
 
-
     const searchCriteria = {};
-  
+
     const selectedTitle = titleDropdown.value;
     if (selectedTitle) {
       searchCriteria.JobTitleId = selectedTitle;
     }
-  
+
     const selectedCompany = companyDropdown.value;
     if (selectedCompany) {
       searchCriteria.CompanyId = selectedCompany;
     }
-  
+
     const enteredLocation = locationInput.value.trim();
     if (enteredLocation !== "") {
       searchCriteria.Location = enteredLocation;
     }
 
-  document.getElementById('sort').value=='recent'?    searchCriteria.RecentlyPosted = true:    searchCriteria.RecentlyPosted = false;
+    document.getElementById("sort").value == "recent"
+      ? (searchCriteria.RecentlyPosted = true)
+      : (searchCriteria.RecentlyPosted = false);
 
-  
     let jobType;
     employmentCheckboxes.forEach((checkbox) => {
       if (checkbox.checked) {
@@ -439,7 +451,7 @@ let progress = setInterval(() => {
     if (jobType) {
       searchCriteria.JobType = jobType;
     }
-  
+
     let jobLevel;
     levelCheckboxes.forEach((checkbox) => {
       if (checkbox.checked) {
@@ -463,10 +475,10 @@ let progress = setInterval(() => {
         case "senior-level":
           searchCriteria.MinExperience = 12;
           searchCriteria.MaxExperience = null;
-   break
+          break;
       }
     }
-  
+
     let salaryRange;
     salaryCheckboxes.forEach((checkbox) => {
       if (checkbox.checked) {
@@ -493,74 +505,60 @@ let progress = setInterval(() => {
           break;
       }
     }
-  
+
     searchCriteria.PageNumber = PageNumber;
     searchCriteria.PageSize = PageSize;
 
-    try{
-      return   await fetchData('api/Job/search', 'POST', searchCriteria);
-
+    try {
+      return await fetchData("api/Job/search", "POST", searchCriteria);
+    } catch (error) {
+      if (error.message.includes("404")) {
+        maxpagereached = true;
+        return [];
       }
-      catch(error)
-      {
-      
-        if ( error.message.includes("404")) {
-          maxpagereached=true
-          return []
-        } 
-      }
+    }
+  }
+  async function GetFilteredData() {
+    maxpagereached = false;
+    currentPage = 1;
+    currentGridPage = 1;
+    isfiltered = true;
+    jobItems = await updateSearchCriteria(1, 24);
+    renderTable(currentPage, itemsPerPage, gridview, isfiltered);
+  }
+  const titleDropdown = document.getElementById("title-list");
+  
+  const companyDropdown = document.getElementById("company-list");
+  
+  const locationInput = document.getElementById("location-input");
+  
+  const searchButton = document.getElementById("search-button");
 
-  
-  }
-  async function GetFilteredData()
-  {
-    maxpagereached=false
-     currentPage = 1;
-     currentGridPage = 1;
-    isfiltered=true
-    jobItems=await updateSearchCriteria(1,24)
-    renderTable(currentPage, itemsPerPage,gridview,isfiltered);
-  }
-  
+  const employmentCheckboxes = document.querySelectorAll(
+    '#employment-filter input[type="checkbox"]'
+  );
+  const levelCheckboxes = document.querySelectorAll(
+    '#level-filter input[type="checkbox"]'
+  );
+  const salaryCheckboxes = document.querySelectorAll(
+    '#salary-filter input[type="checkbox"]'
+  );
   employmentCheckboxes.forEach((checkbox) => {
     checkbox.addEventListener("change", GetFilteredData);
   });
-  
+
   levelCheckboxes.forEach((checkbox) => {
     checkbox.addEventListener("change", GetFilteredData);
   });
-  
+
   salaryCheckboxes.forEach((checkbox) => {
     checkbox.addEventListener("change", GetFilteredData);
   });
   searchButton.addEventListener("click", GetFilteredData);
-  document.getElementById('sort').addEventListener("change", GetFilteredData);
-});
+
+  document.getElementById("sort").addEventListener("change", GetFilteredData);
 
 
-
-
-const titleDropdown = document.getElementById("title-list");
-
-const companyDropdown = document.getElementById("company-list");
-
-const locationInput = document.getElementById("location-input");
-
-const searchButton = document.getElementById("search-button");
-
-
-
-
-
-const employmentCheckboxes = document.querySelectorAll(
-  '#employment-filter input[type="checkbox"]'
-);
-const levelCheckboxes = document.querySelectorAll(
-  '#level-filter input[type="checkbox"]'
-);
-const salaryCheckboxes = document.querySelectorAll(
-  '#salary-filter input[type="checkbox"]'
-);
 
 
 function limitCheckboxSelection(checkboxes) {
@@ -577,12 +575,9 @@ function limitCheckboxSelection(checkboxes) {
   });
 }
 
-
 limitCheckboxSelection(employmentCheckboxes);
 limitCheckboxSelection(levelCheckboxes);
 limitCheckboxSelection(salaryCheckboxes);
-
-
 
 function toggleClassBasedOnScreenSize() {
   const screenWidth = window.innerWidth;

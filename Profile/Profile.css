@@ -11,9 +11,13 @@ body {
 .sidebar {
  
   width: 200px;
-  
+
+  z-index: 999;
 }
 
+.sidebar .hidden{
+  display: block;
+}
 .file-upload {
   position: relative;
   display: inline-block;
@@ -396,8 +400,8 @@ justify-content: center;
 .dates {
   font-size: 1em;
   color:rgba(124, 132, 147, 1);
-  margin-top: 15px; /* Add padding top */
-  margin-bottom: 15px; /* Add padding bottom */
+  margin-top: 15px; 
+  margin-bottom: 15px; 
 }
 
 .duration {
@@ -409,11 +413,11 @@ justify-content: center;
 button:hover img {
   filter: brightness(0.8);
 }
-/* Modal Overlay */
+
 .modal {
   display: none;
   position: fixed;
-  z-index: 1;
+  z-index: 1000;
   left: 0;
   top: 0;
   width: 100%;
@@ -422,7 +426,7 @@ button:hover img {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-/* Modal Content */
+
 .modal-content {
   background-color: #ffffff;
   margin: 5% auto;
@@ -434,7 +438,7 @@ button:hover img {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Modal Header */
+
 .modal-content h2 {
   display: flex;
   align-items: center;
@@ -445,7 +449,7 @@ button:hover img {
   padding-bottom: 10px;
 }
 
-/* Close Button */
+
 .close {
   color: #aaa;
   font-size: 28px;
@@ -459,7 +463,7 @@ button:hover img {
   text-decoration: none;
 }
 
-/* Form Groups */
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -492,7 +496,7 @@ margin-bottom: 8px;
   transition: border-bottom-color 0.3s;
 }
 
-/* Form Actions */
+
 .form-actions {
   display: flex;
   justify-content: space-between;
@@ -604,19 +608,22 @@ margin-left: 350px;
 }
 .address
 {
-  width: 100%;
+  width: 80%;
   overflow: auto;
-
-  word-wrap: anywhere; /* Ensures text will break and wrap within the container */
-  white-space: normal; /* Allows the text to wrap to the next line */
+  word-wrap: anywhere;
+  white-space:normal; 
+  line-height: 1.3; 
 }
 
 #about-me-text {
   overflow: auto;
-    overflow-wrap: anywhere; /* Ensures text will break and wrap within the container */
-    word-wrap: anywhere; /* Ensures text will break and wrap within the container */
-    white-space: normal; /* Allows the text to wrap to the next line */
-  }
+  overflow-wrap: anywhere;
+  word-wrap: anywhere;
+  white-space: normal;
+  line-height: 1.5; 
+}
+
+
 
 @media (max-width: 768px) {
   .container {
@@ -632,6 +639,7 @@ margin-left: 350px;
 
   .sidebar.hidden {
     transform: translateX(0);
+    display: block;
   }
 
   .main-content {

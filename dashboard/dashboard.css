@@ -31,7 +31,7 @@ body {
 
 .header {
   display: flex;
-  justify-content: space-between;
+margin-left: 20px;
   align-items: center;
   margin-bottom: 25px;
 }
@@ -86,6 +86,7 @@ body {
 {
     color: rgba(124, 132, 147, 1);
 }
+
 .stat {
   background-color: #f8f9fa;
   font-weight: 500;
@@ -118,12 +119,13 @@ canvas {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
+h1 ,.greeting,.name{
   font-weight: 650;
-  /* font-size: 20px; */
+
   font-family: "Red Hat Display", sans-serif;
     margin-bottom: 10px;
 }
+
 
 .chart-legend {
   display: flex;
@@ -223,7 +225,7 @@ border: 2px solid ;
 }
 .status.Hired {
   border-color:    rgba(86, 205, 173, 1);
-  color:  rgba(86, 205, 173, 1),
+  color:  rgba(86, 205, 173);
 
 }
 
@@ -237,6 +239,11 @@ border: 2px solid ;
 
   border-color:   #dc3545;
   color: #dc3545;
+}
+.greeting
+{
+  margin-left: 20px;
+
 }
 
 @media (max-width: 768px) {
@@ -272,7 +279,11 @@ border: 2px solid ;
 
   }
     .overview h2 ,  .overview p{
-      margin-inline: 20px;
+      margin-inline: 40px;
+    }
+    .description
+    {
+      margin-left: 40px;
     }
   .main-content
   {

@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Find Jobs</title>
+  <title>JobHuntly</title>
+  <link rel="shortcut icon" href="../assets/icon.svg" type="image/x-icon" />
   <link rel="stylesheet" href="../../Package/sidebar.css">
-  <link rel="stylesheet" href="Profile.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.0.1/dist/css/multi-select-tag.css">
-<link rel="stylesheet" href="../Package/toaster.css">
+  <link rel="stylesheet" href="../Package/toaster.css">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="Profile.css" />
 </head>
 <body>
   <div class="sidebar" id="sidebar">
@@ -74,15 +75,30 @@
               <div class="search-bar">
                 <label for="profilePhoto">Profile Photo:</label>
                 <div class="file-upload">
-                  <input type="file" id="edit-profilePhoto" name="profilePhoto" accept="image/*">
-                  <span id="upload-instruction">Click to replace or drag and drop</span>
-                  <small id="file-types">SVG, PNG, JPG or GIF (max. 125 x 125px)</small>
-                  <div id="file-name"></div>
+                  <div class="photo-input">
+                    <input type="file" id="edit-profilePhoto" name="profilePhoto" accept="image/*">
+                    <span class="upload-instruction">Click to replace or drag and drop</span>
+                    <small class="file-types">SVG, PNG, JPG or GIF (max. 125 x 125px)</small>
+                  </div>
+    
+                  <div class="photo-file-name"></div>
                 </div>
-                <button type="button" class="remove-file-btn" id="remove-file-btn">Remove File</button>
+                <button type="button" class="remove-file-btn" id="remove-file-btn-profile">Remove File</button>
               </div>
               <br><br>
-              
+              <div class="search-bar">
+                <label for="resume">Resume:</label>
+                <div class="file-upload">
+                  <div class="resume-input">
+                      <input type="file" id="edit-resume" name="resume" accept="application/pdf">
+                      <span class="upload-instruction">Click to replace or drag and drop</span>
+                      <small class="file-types">File type: PDF</small>
+                  </div>
+                  <div class="resume-file-name"></div>
+                </div>
+                <button type="button" class="remove-file-btn" id="remove-file-btn-resume">Remove File</button>
+              </div>
+              <br><br>
               <button type="submit" id="Profile-submitBtn-update">Update Profile</button>
             </form>
           </div>

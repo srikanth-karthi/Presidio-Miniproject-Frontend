@@ -1,4 +1,4 @@
-import { fetchData } from "../../Package/api.js";
+import { fetchData ,baseUrl} from "../../Package/api.js";
 import { showToast } from "../../Package/toaster.js";
 import { MultiSelectTag } from "../../Package/Multiselect.js";
 if (!localStorage.getItem("authToken")) {
@@ -35,7 +35,7 @@ if (profileData) {
       <img src="${
         profileData.profileUrl
           ? profileData.profileUrl
-          : "../assets/Company.png"
+          : "../../assets/Company.png"
       }" width="60" height="60" alt="" />
           <div>
             <p>${profileData.name}</p>
@@ -120,13 +120,13 @@ async function GetJobs() {
   try {
     return await fetchData(`api/Job`);
   } catch (error) {
-    console.log(error);
+
     return [];
   }
 }
 
 var jobs = await GetJobs();
-console.log(jobs);
+
 
 function renderJobs(page) {
   jobListBody.innerHTML = "";
@@ -181,7 +181,7 @@ nextPageButton.addEventListener("click", () => {
   }
 });
 
-// Initial render
+
 renderJobs(currentPage);
 updatePageNumber(currentPage);
 
@@ -203,7 +203,6 @@ document.querySelector(".back-jobdetails").addEventListener("click", () => {
 
 
   tabs.forEach((tab) => tab.classList.remove("active-tab"));
-
 
   document.querySelector(".job-applicants-tab").classList.add("active-tab")
   document.getElementById("job-stats-chart").style.display = "none";
@@ -296,7 +295,7 @@ function renderapplication(page) {
     const dropdownContent = row.querySelector(".dropdown-content");
     dropdownBtn.addEventListener("click", () => {
       dropdownContent.classList.toggle("show");
-      console.log("Dropdown clicked");
+
     });
 
     row.querySelector(".see-application").addEventListener("click", () => {
@@ -373,7 +372,7 @@ async function fetchfilteruser(data) {
     return [];
   }
 }
-// Show popup to collect comments
+
 function showCommentPopup(userId, jobactivityId, status) {
   const popup = document.getElementById("commentPopup");
   popup.classList.remove("hidden");
@@ -427,7 +426,7 @@ async function updateApplicationStatusWithComments(
       status: status,
       comments: comments ? comments : "",
     };
-    console.log(data);
+
     try {
       await fetchData("api/JobActivity/Update", "PUT", data);
 
@@ -439,7 +438,7 @@ async function updateApplicationStatusWithComments(
       console.error("Error updating application status:", error);
     }
   } else {
-    console.log(`Application ${jobactivityId} for user ${userId} not found.`);
+
   }
 }
 document.querySelector(".job-details-tab").addEventListener("click", () => {
@@ -477,7 +476,7 @@ function handleTabClick(event) {
   event.target.classList.add("active-tab");
 }
 
-// Attach event listeners to all tabs
+
 tabs.forEach((tab) => {
   tab.addEventListener("click", handleTabClick);
 });
@@ -516,7 +515,7 @@ async function renderAnalytics() {
 
       const statusCell = document.createElement("th");
       statusCell.scope = "row";
-      // statusCell.style.marginInline="70px"
+
       statusCell.textContent = status.charAt(0).toUpperCase() + status.slice(1);
 
       const countCell = document.createElement("td");
@@ -531,7 +530,7 @@ async function renderAnalytics() {
     }
   }
 
-  // Initial render
+
   renderChartData(jobStats);
 }
 function renderJobDetails() {
@@ -545,7 +544,7 @@ function renderJobDetails() {
 
   const content = document.querySelector(".jobcontainer");
   content.innerHTML = ``;
-console.log(data)
+
   content.innerHTML = `
         <div class="header">
             <img src="${
@@ -600,6 +599,31 @@ console.log(data)
             </section>
         </div>
     `;
+
+
+    document.getElementById('edit-job-details').addEventListener('click', function() {
+
+      const jobDescription = document.getElementById('job-description').innerText;
+      const jobStatus = document.querySelector('#apply-before').innerText === 'Active' ? 'active' : 'inactive';
+      const jobType = document.getElementById('job-type').innerText;
+      const salary = document.getElementById('salary').innerText.replace(' Lpa', '');
+      const experience = document.getElementById('experience').innerText.replace(' Years', '');
+    
+    
+      document.getElementById('model-job-description').value = jobDescription;
+      document.querySelector(`input[name="job-status"][value="${jobStatus}"]`).checked = true;
+      document.getElementById('model-job-type').value = jobType;
+      document.getElementById('model-salary').value = salary;
+      document.getElementById('model-experience').value = experience;
+    
+    
+      document.getElementById('editjobModal').style.display = 'block';
+    });
+    
+    document.getElementById('editjobform').addEventListener('submit', Editjobeventlisterner);
+    document.querySelector('#editjobModal .close').addEventListener('click', function() {
+      document.getElementById('editjobModal').style.display = 'none';
+    });
   populateData(
     "skill-list",
     skillsArray,
@@ -754,7 +778,7 @@ function updateUserSkillsArray(userSkills, response, skillsArray) {
 
 async function viewprofile(userid,jobactivityId) {
   var data = await fetchData(`api/User/profile/${userid}`);
-  console.log(data);
+
 
   document.querySelector(".main-content").style.display = "none";
   document.querySelector(".user-profile").style.display = "block";
@@ -886,7 +910,7 @@ function showResume(userId, jobActivityId, token=localStorage.getItem("authToken
         document.querySelector(".profile-main-content").appendChild(resumeViewer);
     }
 
-    const resumeUrl = `http://localhost:5117/api/Resume/view/${userId}/${jobActivityId}`;
+    const resumeUrl = `${baseUrl}api/Resume/view/${userId}/${jobActivityId}`;
 
 
     const blob = new Blob([`
@@ -919,3 +943,58 @@ function showResume(userId, jobActivityId, token=localStorage.getItem("authToken
     resumeViewer.style.display = "block";
 }
 
+
+
+const Editjobeventlisterner = async function(event) {
+  const jobId = document
+  .querySelector(".applicants-header")
+  .getAttribute("jobid");
+const data = jobs.find((job) => job.jobId === jobId);
+  event.preventDefault();
+
+  const jobDescription = document.getElementById('model-job-description').value;
+  const jobStatus = document.querySelector('input[name="job-status"]:checked').value;
+  const jobType = document.getElementById('model-job-type').value;
+  const salary = document.getElementById('model-salary').value;
+  const experience = document.getElementById('model-experience').value;
+
+  if (jobDescription.trim() === '' || jobType.trim() === '') {
+    alert('Please fill in all required fields.');
+    return;
+  }
+
+  if (isNaN(salary) || salary < 0) {
+    showToast('warning', 'warning', 'Please enter a valid salary (0 or more).');
+    return;
+  }
+
+  if (isNaN(experience) || experience < 0) {
+    showToast('warning', 'warning', 'Please enter valid experience (0 or more).');
+    return;
+  }
+
+  const formData = {
+    jobId: data.jobId,
+    titleId: data.titleId,
+    jobDescription: jobDescription.trim(),
+    lpa: Number(salary),
+    experienceRequired: Number(experience),
+    jobType: jobType, 
+    status: jobStatus === 'active'
+  };
+
+  var updatedjob = await fetchData("api/Job/update", "PUT", formData);
+
+  const jobIndex = jobs.findIndex((job) => job.jobId === updatedjob.jobId);
+  if (jobIndex !== -1) {
+    jobs[jobIndex] = updatedjob;
+  } else {
+    console.error('Job not found');
+  }
+
+  renderJobs(currentPage);
+  document.querySelector(".job-info").textContent = updatedjob.jobType;
+  renderJobDetails();
+  document.getElementById('editjobModal').style.display = 'none';
+  document.getElementById('editjobform').reset();
+};

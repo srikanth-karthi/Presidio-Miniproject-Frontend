@@ -35,7 +35,7 @@ let Profile;
 async function loadProfile() {
   try {
     Profile = await fetchData("api/Company/profile");
-    console.log(Profile)
+
     renderProfile(Profile);
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -94,14 +94,13 @@ function updateProfileUI(profile) {
 
 function editAboutMeHandler() {
   const aboutMeContainer = document.getElementById("description-container");
-  const aboutMeTextContent = elements.aboutMeText.textContent.trim();
 
   const textarea = document.createElement("textarea");
   textarea.style.width = "100%";
   textarea.style.height = "130px";
   textarea.id = "description-textarea";
-  textarea.maxLength = 255;
-  textarea.value = aboutMeTextContent;
+  textarea.maxLength = 400;
+  textarea.value = Profile.companyDescription.trim();
 
   aboutMeContainer.innerHTML = "";
   aboutMeContainer.appendChild(textarea);
@@ -195,8 +194,8 @@ document.getElementById('file-upload').addEventListener('change', async function
 
       const updateResponse = await fetchData("api/Company/upload-logo", "POST", formData, true);
       
-console.log(Profile.logoUrl)
-      console.log(updateResponse.logoUrl);
+
+
       
 
       Profile.logoUrl = updateResponse.logoUrl+'?date='+Date.now();
@@ -229,11 +228,7 @@ function openEditModal() {
     elements.editAdditionalDetailsModal.style.display = 'none';
   });
 
-  window.addEventListener('click', (event) => {
-    if (event.target == elements.editAdditionalDetailsModal) {
-      elements.editAdditionalDetailsModal.style.display = 'none';
-    }
-  });
+
 }
 
 elements.updateDetailsForm.addEventListener('submit', async function (event) {

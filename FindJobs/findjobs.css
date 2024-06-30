@@ -63,6 +63,20 @@ body {
   margin-right: 20px;
 }
 
+.skill-item {
+  background-color: #f1f1f1;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 .header {
 
   display: flex;
@@ -78,7 +92,7 @@ body {
   height: 2px;
   background-color: rgba(214, 221, 235, 1);
   margin-bottom: 20px;
-  /* margin-top: 20px; */
+
 }
 .search-bar {
 
@@ -228,9 +242,9 @@ width: 250px;
 .sort-select option {
   font-size: 14px;
   color: #2D2F34;
-  background-color: #fff; /* Background color */
+  background-color: #fff;
   margin-top: 30px;
-  padding: 18px 12px; /* Padding around the text */
+  padding: 18px 12px; 
 }
 
 #location-input
@@ -253,8 +267,8 @@ width: 250px;
 }
 
 .view-button img {
-  width: 20px; /* Adjust as needed */
-  height: 20px; /* Adjust as needed */
+  width: 20px; 
+  height: 20px; 
 }
 
 
@@ -388,7 +402,7 @@ width: 90px;
   cursor: not-allowed;
 }
 
-/* The Modal (background) */
+
 .modal {
   display: none; 
   position: fixed; 
@@ -404,7 +418,7 @@ width: 90px;
   animation-duration: 0.4s;
 }
 
-/* Modal Content */
+
 .modal-content {
   background-color: #fefefe;
   margin: 10% auto; 
@@ -419,7 +433,6 @@ width: 90px;
   animation-duration: 0.4s;
 }
 
-/* Animation for Modal */
 @keyframes fadeIn {
   from {opacity: 0;}
   to {opacity: 1;}
@@ -430,7 +443,6 @@ width: 90px;
   to {transform: translateY(0);}
 }
 
-/* Close Button */
 .close {
   color: #aaa;
   float: right;
@@ -449,13 +461,22 @@ width: 90px;
   width: 100px;
   height: auto;
   display: block;
-  /* margin: 0 auto 20px; */
+
   border-radius: 50%;
 }
 
 .modal-content h2 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+
+}
+.model-apply-button
+{
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline: auto;
 }
 .model-header
 {
@@ -500,6 +521,12 @@ margin-right: 50px;
   font-size: 30px;
   font-weight: 500;
   color: #606060;
+}
+
+.applied
+{
+ background-color:"#e0e8ff";
+  color:"rgba(70, 64, 222, 1)"
 }
 
 @media (max-width: 768px) {

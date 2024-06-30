@@ -80,7 +80,7 @@ export function createToastWrapper() {
 
 export function updateToastPositions() {
  activeToasts.forEach((toast, index) => {
-   toast.style.top = `${index * (toast.offsetHeight + 10)}px`;
+   toast.style.top = `${index * ( 10)}px`;
  });
 }
 

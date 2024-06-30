@@ -35,8 +35,7 @@
         <a href="../dashboard/dashboard.html" class="nav-item">Dashboard</a>
         <a href="../Profile/profile.html" class="nav-item">Company Profile</a>
         <a href="#" class="nav-item selected">Job Listing</a>
-        <a href="#" class="nav-item">Browse Companies</a>
-        <a href="../Profile/Profile.html" class="nav-item">My Public Profile</a>
+        <a href="../Post-jobs/Post-jobs.html" class="nav-item ">Post Job</a>
       </nav>
       <div class="profile"></div>
     </div>
@@ -82,7 +81,7 @@
             </tr>
           </thead>
           <tbody id="job-list-body">
-            <!-- Data will be injected here -->
+
           </tbody>
         </table>
       </div>
@@ -94,8 +93,8 @@
             srcset=""
           />
           <div>
-            <div class="job-title">Social Media Assistant</div>
-            <div class="job-info">Full-Time</div>
+            <div class="job-title"></div>
+            <div class="job-info"></div>
           </div>
         </header>
         <nav class="job-navigation">
@@ -160,6 +159,54 @@
       </table>
   </div>
 
+  <div id="editjobModal" class="modal">
+    <div class="modal-content">
+        <h2>Edit Job Details <span class="close">&times;</span></h2>
+        <form id="editjobform">
+            <div class="form-group">
+                <label for="job-description">Job Description:</label>
+                <textarea style="height: 80px;" id="model-job-description" required placeholder="Enter job description here"></textarea>
+            </div>
+            
+            <div class="model-status">
+                <label for="job-status">Status</label>
+                <div>
+                    <input type="radio" id="status-active" name="job-status" value="active">
+                    <label for="status-active">Active</label>
+                </div>
+                <div>
+                    <input type="radio" id="status-inactive" name="job-status" value="inactive">
+                    <label for="status-inactive">Inactive</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="job-type">Job Type:</label>
+                <select id="model-job-type" required>
+                    <option value="FullTime">Full Time</option>
+                    <option value="PartTime">Part Time</option>
+                    <option value="Hybrid">Hybrid</option>
+                    <option value="Internship">Internship</option>
+                    <option value="Freelance">Freelance</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="salary">Salary:</label>
+                <input type="number" id="model-salary"  placeholder="Salary Not Provided">
+            </div>
+            
+            <div class="form-group">
+                <label for="experience">Experience:</label>
+                <input type="number" id="model-experience"  placeholder="Experience Not Provided">
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Update Job Details</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 
       <div class="pagination">
