@@ -104,6 +104,8 @@ function populateData(
   });
 }
 var Updateskills = [];
+function rendermultisselect()
+{
 new MultiSelectTag("skill-list", {
   rounded: true,
   shadow: true,
@@ -117,6 +119,8 @@ new MultiSelectTag("skill-list", {
     Updateskills = values;
   },
 });
+}
+rendermultisselect()
 const form = document.querySelector("form");
 const jobTitle = document.getElementById("title-list");
 const jobDescription = document.getElementById("model-job-description");
@@ -125,7 +129,7 @@ const salary = document.getElementById("salary");
 const experience = document.getElementById("experience");
 
 
-form.addEventListener("submit", function (event) {
+form.addEventListener("submit", async function (event) {
   event.preventDefault(); 
 
   if (jobTitle.value === "") {
@@ -159,25 +163,31 @@ form.addEventListener("submit", function (event) {
     showToast("warning", "warning", "Please enter a valid Experience.");
     return;
   }
-  Updateskills = Updateskills.map((skill) => ({
-    skillId: skill.value,
-  }));
+  var SkillsRequired=[]
+  Updateskills.forEach((skill)=>
+  {
+  SkillsRequired.push( skill.value)
+  })
 
 
 
   const formData = {
-    jobType: selectedJobStatus,
-    titleId: jobTitle.value,
-    experienceRequired: "13",
-    lpa: salary.value == "" ? 0 : salary.value,
+    JobType: selectedJobStatus,
+    TitleId: jobTitle.value,
 
-    jobDescription: jobDescription.value.trim(),
-    skillsRequired: Updateskills,
-    experienceRequired: experience.value == "" ? 0 : experience.value,
+    Lpa: salary.value == "" ? 0 : salary.value,
+
+    JobDescription: jobDescription.value.trim(),
+    SkillsRequired: SkillsRequired,
+    ExperienceRequired: experience.value == "" ? 0 : experience.value,
   };
   try{
-    fetchData("api/Job/add","POST",formData)
+  await  fetchData("api/Job/add","POST",formData)
     showToast("success", "success", "Job Added Sucessfully.");
+    Updateskills = [];
+    SkillsRequired=[]
+    rendermultisselect()
+
     form.reset();
   }
   catch(e){

@@ -75,9 +75,10 @@ crossButton.addEventListener("click", function () {
 
 let currentPage = 1;
 const itemsPerPage = 6;
-
+var maxpagereached=false
+var isfiltered=false
 let currentPageapplicant = 1;
-const itemsPerPageapplicant = 2;
+const itemsPerPageapplicant = 4;
 const jobListBody = document.getElementById("job-list-body");
 const jobList = document.querySelector(".job-list");
 const pageNumber = document.getElementById("page-number");
@@ -240,12 +241,19 @@ async function fetchAndDisplayApplications(job,isprofileviwed=true) {
 
   renderapplication(currentPageapplicant);
 }
-function renderapplication(page) {
+async function renderapplication(page,formData=null) {
 
     const start = (page - 1) * itemsPerPageapplicant;
     const end = page * itemsPerPageapplicant;
     const paginatedJobs = applications.slice(start, end);
-
+if(isfiltered && !maxpagereached && end > applications.length - 4)
+  {
+    formData.pageNumber=      1 + Math.ceil(applications.length / 16)
+   const additionalData = await fetchfilteruser(
+      formData
+    );
+    applications = applications.concat(additionalData);
+  }
   const tbody = document.getElementById("applicants-tbody");
   tbody.innerHTML = "";
   paginatedJobs.forEach((applicant) => {
@@ -338,12 +346,14 @@ document
   .querySelector(".filter-btn")
   .addEventListener("click", async (event) => {
     event.preventDefault();
+    isfiltered=true
+    maxpagereached=false
     var formData = new FormData(document.querySelector(".search-filter"));
 
     let filterParams = {
       jobId: document.querySelector(".applicants-header").getAttribute("jobid"),
       pageNumber: 1,
-      pageSize: 5,
+      pageSize: 16,
       firstApplied:
         formData.has("firstApplied") && formData.get("firstApplied") === "on",
       perfectMatchSkills:
@@ -359,7 +369,8 @@ document
 
     applications = await fetchfilteruser(filterParams);
     currentPageapplicant=1
-    renderapplication(currentPageapplicant);
+    updatePageNumberApplicant(currentPageapplicant);
+    renderapplication(currentPageapplicant,filterParams);
   });
 
 async function fetchfilteruser(data) {
@@ -368,6 +379,10 @@ async function fetchfilteruser(data) {
 
     return response;
   } catch (error) {
+    if (error.message.includes("404")) {
+      maxpagereached = true;
+      return [];
+    }
     console.error("Error fetching applications:", error);
     return [];
   }
@@ -446,14 +461,14 @@ document.querySelector(".job-details-tab").addEventListener("click", () => {
   document.querySelector(".applicants-section").style.display = "none";
   document.querySelector(".jobcontainer").style.display = "block";
   document.getElementById("job-stats-chart").style.display = "none";
-  document.querySelector(".search-filter").reset();
+
 
   renderJobDetails();
 });
 document.querySelector(".job-applicants-tab").addEventListener("click", () => {
   document.querySelector(".applicants-section").style.display = "block";
   document.querySelector(".jobcontainer").style.display = "none";
-  document.querySelector(".search-filter").reset();
+
 
   document.getElementById("job-stats-chart").style.display = "none";
 });
@@ -461,7 +476,7 @@ document.querySelector(".job-analytics-tab").addEventListener("click", () => {
   document.querySelector(".applicants-section").style.display = "none";
   document.querySelector(".jobcontainer").style.display = "none";
   document.getElementById("job-stats-chart").style.display = "block";
-  document.querySelector(".search-filter").reset();
+
 
   renderAnalytics();
 });
