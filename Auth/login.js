@@ -47,7 +47,13 @@ loginForm.addEventListener('submit', async (event) => {
     try {
         const response = await fetchData(loginUrl, 'POST', loginData, false, true);
         localStorage.setItem("authToken", response.token);
-        window.location.href = userType === 'job-seeker' ? "../dashboard/dashboard.html?authid=1" : "/Jobposter/dashboard/dashboard.html?authid=1";
+        if(loginData.email=="admin@jobportal.com") 
+            {
+                window.location.href="../Admin/Admin.html?authid=1" 
+            }
+            else 
+            {window.location.href = userType === 'job-seeker' ? "../dashboard/dashboard.html?authid=1" : "/Jobposter/dashboard/dashboard.html?authid=1";
+            }
     } catch (error) {
         console.error("Error updating profile details:", error);
         const errorMessage = error.message.includes("401") || error.message.includes("400") ? 'Invalid credentials.' : 'Please login again later.';
