@@ -122,8 +122,12 @@ a {
     display: flex;
 flex-wrap: wrap;
 font-weight: 600;
-justify-content: center;
 width: 100%;
+
+
+justify-content: space-around;
+
+
 
 }
 

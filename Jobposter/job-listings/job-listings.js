@@ -201,7 +201,7 @@ document.querySelector(".back-jobdetails").addEventListener("click", () => {
   jobList.style.display = "block";
   const tabs = document.querySelectorAll(".job-navigation a");
 
-
+isfiltered=false
 
   tabs.forEach((tab) => tab.classList.remove("active-tab"));
 
@@ -254,8 +254,26 @@ if(isfiltered && !maxpagereached && end > applications.length - 4)
     );
     applications = applications.concat(additionalData);
   }
+
   const tbody = document.getElementById("applicants-tbody");
   tbody.innerHTML = "";
+      document.querySelector(".pagination-applicant").style.display="flex"
+  console.log(applications.length)
+if(applications.length <=0 && isfiltered)
+  {
+    tbody.innerHTML = "<div style='text-align: center;' colspan='100%'><h3>No filtered Applicants found</h3></div>";
+
+    document.querySelector(".pagination-applicant").style.display="none"
+    return
+  }
+
+  if(applications.length <=0)
+    {
+      tbody.innerHTML = "<td><h3> No Applicants found</h3><td>"
+      document.querySelector(".pagination-applicant").style.display="none"
+      return
+    }
+
   paginatedJobs.forEach((applicant) => {
     const row = document.createElement("tr");
 
@@ -814,12 +832,17 @@ async function viewprofile(userid,jobactivityId) {
       <h1>${data.name}</h1>
       <div class="contact">
         <p>Email: ${data.email}</p>
-        <p>Phone: ${data.phoneNumber}</p>
-        <p>Website: ${
-          data.portfolioLink ? data.portfolioLink : "Not provided"
-        }</p>
-      </div>
-    `;
+        <p>Phone: ${data.phoneNumber ? data.phoneNumber : "Not provided"}</p>
+
+
+    <p>Website:
+      ${data.portfolioLink ? 
+        `<a href="${data.portfolioLink}" class="website-link" target="_blank" rel="noopener noreferrer">${data.portfolioLink}</a>` 
+        : "Not provided"}
+    </p>
+
+`;
+
 
   const mainContent = document.createElement("div");
   mainContent.className = "profile-main-content";
@@ -832,7 +855,7 @@ async function viewprofile(userid,jobactivityId) {
         <h2>Personal Info</h2>
         <p>Full Name: ${data.name}</p>
         <p>Date of Birth: ${formatDate(data.dob)}</p>
-        <p>Address: ${data.address}, ${data.city}</p>
+        <p>Address: ${data.address ? data.address+","+data.city :data.city }</p>
         <h2>Professional Info</h2>
         <h3>About Me</h3>
         <p>${data.aboutMe ? data.aboutMe : "Not provided"}</p>
