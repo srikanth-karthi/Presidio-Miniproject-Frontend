@@ -182,7 +182,7 @@ renderPagination(jobHistory);
 
 document.querySelectorAll('.tab-item').forEach((tab, index) => {
     tab.addEventListener('click', function(event) {
-        event.ventDefault();
+        event.preventDefault();
         document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
         tab.classList.add('active');
 

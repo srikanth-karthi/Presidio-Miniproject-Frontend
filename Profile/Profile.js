@@ -125,11 +125,15 @@ if(!localStorage.getItem('authToken'))
 
 
   }
-  catch
-  {
   
+  catch (error) {
+    if (error.message.includes("404")) {
+  {
+    localStorage.clear()
+    window.location.href = "/Auth/login.html?authid=3";
   }
-
+    }
+  }
   populateData("title-list", jobTitles, "titleName", "titleId");
   populateData("title-list-aoi", jobTitles, "titleName", "titleId");
   populateData("company-list", companies, "companyName", "companyId");

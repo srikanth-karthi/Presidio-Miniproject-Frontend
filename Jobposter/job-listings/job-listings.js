@@ -453,8 +453,10 @@ async function updateApplicationStatusWithComments(
       applicant.userId === userId && applicant.jobactivityId === jobactivityId
   );
   if (applicationIndex !== -1) {
+    console.log(applications[applicationIndex])
     applications[applicationIndex].status = status;
     const data = {
+      resumeViewed: applications[applicationIndex].resumeViewed,
       jobactivityId: applications[applicationIndex].jobactivityId,
       status: status,
       comments: comments ? comments : "",
@@ -462,7 +464,6 @@ async function updateApplicationStatusWithComments(
 
     try {
       await fetchData("api/JobActivity/Update", "PUT", data);
-
 
 
         renderapplication(currentPageapplicant);
@@ -1036,3 +1037,5 @@ const data = jobs.find((job) => job.jobId === jobId);
   document.getElementById('editjobModal').style.display = 'none';
   document.getElementById('editjobform').reset();
 };
+
+  
