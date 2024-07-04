@@ -286,7 +286,7 @@ if(applications.length <=0 && isfiltered)
  <td class="meta-tags ${getStatusClass(applicant.status)}">${
       applicant.status
     }</td>
-          <td>${applicant.appliedDate}</td>
+          <td>${formatDate(applicant.appliedDate)}</td>
           <td><button class="see-application">See Profile</button></td>
             <td class="options-cell">
                 <div class="options">
@@ -319,8 +319,9 @@ if(applications.length <=0 && isfiltered)
       `;
     const dropdownBtn = row.querySelector(".dropdown-btn");
     const dropdownContent = row.querySelector(".dropdown-content");
-    dropdownBtn.addEventListener("click", () => {
+    dropdownBtn.addEventListener("click", (e) => {
       dropdownContent.classList.toggle("show");
+    e.stopPropagation()
 
     });
 
@@ -605,7 +606,7 @@ function renderJobDetails() {
                             }">${
     data.status ? "Active" : "Inactive"
   }</span></li>
-                            <li>Job Type: <span id="job-type">${
+                            <li >Job Type: <span id="job-type" class=${getJobTypeClass( data.jobType)}>${
                               data.jobType
                             }</span></li>
                             <li>Salary: <span id="salary">${
@@ -887,7 +888,7 @@ async function viewprofile(userid,jobactivityId) {
           `
                   )
                   .join("")
-              : "<p>No education data provided</p>"
+              : "<p>No education provided</p>"
           }
         </div>
         <h3>Experience</h3>
@@ -907,7 +908,7 @@ async function viewprofile(userid,jobactivityId) {
           `
                   )
                   .join("")
-              : "<p>No experience data provided</p>"
+              : "<p>No experience provided</p>"
           }
         </div>
       </div>
@@ -1038,4 +1039,11 @@ const data = jobs.find((job) => job.jobId === jobId);
   document.getElementById('editjobform').reset();
 };
 
-  
+
+document.addEventListener("click", (event) => {
+console.log("hj")
+  const dropdowns = document.querySelectorAll(".dropdown-content");
+  dropdowns.forEach((dropdown) => {
+    dropdown.classList.add("show");
+  });
+});
